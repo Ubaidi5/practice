@@ -55,10 +55,10 @@ const Mutations = new GraphQLObjectType({
               const updatedUser = await userController.loginAdmin(user);
               resolve(updatedUser);
             } else {
-              reject("Email or password is incorrect");
+              reject(new Error("Email or password is incorrect"));
             }
           } else {
-            reject("Email or password is incorrect");
+            reject(new Error("Email or password is incorrect"));
           }
         });
       },

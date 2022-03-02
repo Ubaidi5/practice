@@ -4,10 +4,18 @@ const bcrypt = require("bcrypt");
 require("dotenv").config();
 
 const userController = {
+  isUserExist: (args) => {
+    return new Promise(async (resolve) => {
+      const [user] = await userModel.find({ email: args.email });
+      if (user) {
+        resolve({ isUserExist: true, user: user });
+      } else {
+        resolve({ isUserExist: false });
+      }
+    });
+  },
   signupUser: (args) => {
     return new Promise(async (resolve, reject) => {
-      // Step 0 - check if user already exist
-      // Step 1 - Hash password
       const hashedPassword = await bcrypt.hash(args.password, 10); // for now having low level security
       args.password = hashedPassword;
 
@@ -29,21 +37,8 @@ const userController = {
       resolve(user);
     });
   },
-  isUserExist: (args) => {
-    return new Promise(async (resolve) => {
-      const [user] = await userModel.find({ email: args.email });
-      if (user) {
-        resolve({ isUserExist: true, user: user });
-      } else {
-        resolve({ isUserExist: false });
-      }
-    });
-  },
   loginAdmin: (userData) => {
     return new Promise(async (resolve, reject) => {
-      //-------------------------------------------------------------------------------------//
-      //                                     Issue Token                                     //
-      //-------------------------------------------------------------------------------------//
       const newToken = JWT.sign(
         { id: userData._id, email: userData.email, roleId: userData.userRole },
         "process.env.jwt_token"
