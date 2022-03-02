@@ -64,6 +64,34 @@ const userController = {
       return err;
     }
   },
+  forgotPassword: async (userData) => {
+    try {
+      const user = await userModel.findOneAndUpdate(
+        { _id: userData._id },
+        { $set: { code: 12345 } }
+      );
+
+      return user;
+    } catch (err) {
+      return err;
+    }
+  },
+  resetPassword: async (userData, newPassword) => {
+    try {
+      const hashedPassword = await bcrypt.hash(newPassword, 10); // for now having low level security
+
+      const user = await userModel.findOneAndUpdate(
+        { _id: userData._id },
+        {
+          $set: { password: hashedPassword, code: "" },
+        }
+      );
+
+      return user;
+    } catch (err) {
+      return err;
+    }
+  },
 };
 
 module.exports = userController;

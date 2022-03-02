@@ -25,6 +25,7 @@ const JWT_TOKEN_TYPE = new GraphQLObjectType({
 const USER_TYPE = new GraphQLObjectType({
   name: "User",
   fields: () => ({
+    _id: { type: GraphQLID },
     firstName: { type: GraphQLString },
     lastName: { type: GraphQLString },
     email: { type: GraphQLString },

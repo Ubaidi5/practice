@@ -63,6 +63,48 @@ const Mutations = new GraphQLObjectType({
         });
       },
     },
+    forgotPassword: {
+      type: Types.USER_TYPE,
+      args: {
+        email: { type: GraphQLString },
+      },
+      resolve: (parent, args) => {
+        return new Promise(async (resolve, reject) => {
+          const { isUserExist, user } = await userController.isUserExist(args);
+          if (isUserExist) {
+            const updatedUser = await userController.forgotPassword(user);
+            resolve(updatedUser);
+          } else {
+            reject(
+              new Error("Doesn't found any account associated with this email")
+            );
+          }
+        });
+      },
+    },
+    resetPassword: {
+      type: Types.USER_TYPE,
+      args: {
+        email: { type: GraphQLString },
+        code: { type: GraphQLString },
+        newPassword: { type: GraphQLString },
+      },
+      resolve: (parent, args) => {
+        return new Promise(async (resolve, reject) => {
+          const { isUserExist, user } = await userController.isUserExist(args);
+
+          if (isUserExist && args.code === user.code) {
+            const updatedUser = await userController.resetPassword(
+              user,
+              args.newPassword
+            );
+            resolve(updatedUser);
+          } else {
+            reject(new Error("Code is not valid"));
+          }
+        });
+      },
+    },
   },
 });
 
