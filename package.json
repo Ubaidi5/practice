@@ -7,6 +7,8 @@
     "start": "npx nodemon app.js"
   },
   "dependencies": {
+    "bcrypt": "^5.0.1",
+    "dotenv": "^16.0.0",
     "express": "^4.17.1",
     "express-graphql": "^0.7.1",
     "graphql": "^14.5.8",

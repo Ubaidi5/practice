@@ -23,6 +23,7 @@ const Mutations = new GraphQLObjectType({
         email: { type: GraphQLString },
         phoneNumber: { type: GraphQLString },
         branchIds: { type: new GraphQLList(GraphQLString) },
+        password: { type: GraphQLString },
       },
       resolve: (parent, args) => {
         return new Promise(async (resolve, reject) => {

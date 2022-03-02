@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
     loggedDevices: [
       {
         createdAt: { type: Date, default: new Date() },
-        deviceId: { type: String, required: true },
+        // deviceId: { type: String, required: true },
         isUser: { type: Boolean, default: true },
         notificationToken: { type: String },
         jwtToken: {
