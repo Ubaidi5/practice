@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema(
     email: { type: String, require: true, trim: true },
     phoneNumber: { type: String, require: true },
     password: { type: String, trim: true, default: "" },
-    isPasswordRequest: { type: Boolean, default: true },
+    isPasswordRequest: { type: Boolean, default: false },
     code: { type: String, default: "" },
     description: { type: String, default: "" },
     createdAt: { type: Date, default: new Date(), required: true },

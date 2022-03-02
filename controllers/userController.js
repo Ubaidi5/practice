@@ -6,7 +6,9 @@ require("dotenv").config();
 const userController = {
   isUserExist: async (args) => {
     try {
-      const [user] = await userModel.find({ email: args.email });
+      const [user] = await userModel.find({
+        email: args.email.replaceAll(" ", "").toLowerCase(),
+      });
       if (user) {
         return { isUserExist: true, user };
       } else {
@@ -20,6 +22,7 @@ const userController = {
     try {
       const hashedPassword = await bcrypt.hash(args.password, 10); // for now having low level security
       args.password = hashedPassword;
+      args.email = args.email.replaceAll(" ", "").toLowerCase();
 
       const user = new userModel(args); // New User Created
 
