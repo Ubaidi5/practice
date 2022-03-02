@@ -1,9 +1,6 @@
 const graphql = require("graphql");
-const Books = require("../models/bookSchama");
-const Authors = require("../models/authorSchema");
-const booksController = require("../controllers/booksController");
 const userController = require("../controllers/userController");
-const { AuthorType, BookType, UserType } = require("./types");
+const Types = require("./types");
 
 const {
   GraphQLObjectType,
@@ -18,35 +15,8 @@ const {
 const Mutations = new GraphQLObjectType({
   name: "Mutations", // This name appear in Graphiql documentation
   fields: {
-    addAuthor: {
-      type: AuthorType, // This is return type
-      args: {
-        name: { type: GraphQLString },
-        age: { type: GraphQLInt },
-      },
-      resolve: (parent, args) => {
-        const { name, age } = args;
-        const author = new Authors({ name, age });
-        author.save();
-        return author;
-      },
-    },
-    addBook: {
-      type: BookType,
-      args: {
-        title: { type: GraphQLString },
-        rating: { type: GraphQLInt },
-        genre: { type: GraphQLString },
-        authorId: { type: GraphQLID },
-      },
-      resolve: async (parent, args) => {
-        const response = await booksController.addBook(args);
-        console.log("Response: ", response);
-        return response;
-      },
-    },
     signupUser: {
-      type: UserType,
+      type: Types.USER_TYPE, // This is return type
       args: {
         firstName: { type: GraphQLString },
         lastName: { type: GraphQLString },
@@ -67,15 +37,21 @@ const Mutations = new GraphQLObjectType({
         });
       },
     },
-    issueToken: {
-      type: UserType,
+    loginAdmin: {
+      type: Types.USER_TYPE,
       args: {
         email: { type: GraphQLString },
       },
       resolve: (parent, args) => {
         return new Promise(async (resolve, reject) => {
-          const user = await userController.issueToken(args);
-          resolve(user);
+          const { isUserExist, user } = await userController.isUserExist(args); // Check if user exist
+
+          if (isUserExist) {
+            const updatedUser = await userController.loginAdmin(user);
+            resolve(updatedUser);
+          } else {
+            reject("Email or password is incorrect");
+          }
         });
       },
     },

@@ -1,4 +1,5 @@
 const graphql = require("graphql");
+const { GraphQLDateTime } = require("graphql-iso-date");
 
 const {
   GraphQLObjectType,
@@ -9,46 +10,19 @@ const {
   GraphQLInt,
 } = graphql;
 
-/**
- * Auhtor Type
- */
-const AuthorType = new GraphQLObjectType({
-  name: "Author",
+const JWT_TOKEN_TYPE = new GraphQLObjectType({
+  name: "jwtToken",
   fields: () => ({
-    _id: { type: GraphQLID },
-    name: { type: GraphQLString },
-    age: { type: GraphQLInt },
-    books: {
-      type: new GraphQLList(BookType),
-      resolve: (parents) => {
-        const { id } = parents;
-        return Books.find({ authorId: id });
-      },
+    token: {
+      type: GraphQLString,
+    },
+    createdAt: {
+      type: GraphQLDateTime,
     },
   }),
 });
 
-/**
- * Book Type
- */
-const BookType = new GraphQLObjectType({
-  name: "Book",
-  fields: () => ({
-    _id: { type: GraphQLID },
-    title: { type: GraphQLString },
-    genre: { type: GraphQLString },
-    rating: { type: GraphQLFloat },
-    author: {
-      type: AuthorType,
-      resolve: (parents) => {
-        const { authorId: id } = parents;
-        return Authors.findById(id);
-      },
-    },
-  }),
-});
-
-const UserType = new GraphQLObjectType({
+const USER_TYPE = new GraphQLObjectType({
   name: "User",
   fields: () => ({
     firstName: { type: GraphQLString },
@@ -66,7 +40,8 @@ const UserType = new GraphQLObjectType({
     city: { type: GraphQLString },
     zipCode: { type: GraphQLString },
     timeZone: { type: GraphQLString },
+    jwtToken: { type: JWT_TOKEN_TYPE },
   }),
 });
 
-module.exports = { AuthorType, BookType, UserType };
+module.exports = { USER_TYPE };
