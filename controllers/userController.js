@@ -4,18 +4,20 @@ const bcrypt = require("bcrypt");
 require("dotenv").config();
 
 const userController = {
-  isUserExist: (args) => {
-    return new Promise(async (resolve) => {
+  isUserExist: async (args) => {
+    try {
       const [user] = await userModel.find({ email: args.email });
       if (user) {
-        resolve({ isUserExist: true, user: user });
+        return { isUserExist: true, user };
       } else {
-        resolve({ isUserExist: false });
+        return { isUserExist: false };
       }
-    });
+    } catch (err) {
+      return err;
+    }
   },
-  signupUser: (args) => {
-    return new Promise(async (resolve, reject) => {
+  signupUser: async (args) => {
+    try {
       const hashedPassword = await bcrypt.hash(args.password, 10); // for now having low level security
       args.password = hashedPassword;
 
@@ -31,14 +33,16 @@ const userController = {
       };
 
       user.jwtToken = jwtToken;
-      user.loggedDevices.push(jwtToken);
+      user.loggedDevices.push({ jwtToken });
 
       await user.save();
-      resolve(user);
-    });
+      return user;
+    } catch (err) {
+      return err;
+    }
   },
-  loginAdmin: (userData) => {
-    return new Promise(async (resolve, reject) => {
+  loginAdmin: async (userData) => {
+    try {
       const newToken = JWT.sign(
         { id: userData._id, email: userData.email, roleId: userData.userRole },
         "process.env.jwt_token"
@@ -52,9 +56,10 @@ const userController = {
         { _id: userData._id },
         { $set: { jwtToken }, $push: { loggedDevices: { jwtToken } } }
       );
-
-      resolve(user);
-    });
+      return user;
+    } catch (err) {
+      return err;
+    }
   },
 };
 
