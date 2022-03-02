@@ -1,6 +1,7 @@
 const graphql = require("graphql");
 const userController = require("../controllers/userController");
 const Types = require("./types");
+const bcrypt = require("bcrypt");
 
 const {
   GraphQLObjectType,
@@ -42,14 +43,20 @@ const Mutations = new GraphQLObjectType({
       type: Types.USER_TYPE,
       args: {
         email: { type: GraphQLString },
+        password: { type: GraphQLString },
       },
       resolve: (parent, args) => {
         return new Promise(async (resolve, reject) => {
           const { isUserExist, user } = await userController.isUserExist(args); // Check if user exist
 
           if (isUserExist) {
-            const updatedUser = await userController.loginAdmin(user);
-            resolve(updatedUser);
+            const match = await bcrypt.compare(args.password, user.password);
+            if (match) {
+              const updatedUser = await userController.loginAdmin(user);
+              resolve(updatedUser);
+            } else {
+              reject("Email or password is incorrect");
+            }
           } else {
             reject("Email or password is incorrect");
           }
