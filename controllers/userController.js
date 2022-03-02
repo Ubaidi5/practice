@@ -55,7 +55,7 @@ const userController = {
 
       const user = await userModel.findOneAndUpdate(
         { _id: userData._id },
-        { $set: { jwtToken }, $push: { loggedDevices: jwtToken } }
+        { $set: { jwtToken }, $push: { loggedDevices: { jwtToken } } }
       );
 
       resolve(user);
@@ -64,5 +64,3 @@ const userController = {
 };
 
 module.exports = userController;
-
-// Steps for signup used by Hassaan ---> Inser tUser, Issue Token,
