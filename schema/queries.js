@@ -1,5 +1,6 @@
 const graphql = require("graphql");
 const userModel = require("../models/userModel");
+const emailHelper = require("../helpers/email_helper");
 
 const Types = require("./types");
 
@@ -15,12 +16,38 @@ const {
 const RootQuery = new GraphQLObjectType({
   name: "RootQuery",
   fields: {
-    book: {
+    sendEmail: {
       type: Types.USER_TYPE,
-      args: { id: { type: GraphQLID } },
+      args: {
+        firstName: { type: GraphQLString },
+        lastName: { type: GraphQLString },
+        email: { type: GraphQLString },
+        phoneNumber: { type: GraphQLString },
+      },
       resolve: (_, args) => {
-        const { id } = args;
-        return userModel.findById(id);
+        const templateData = {
+          firstName: args.firstName,
+          lastName: args.lastName,
+          email: args.email,
+          phoneNumber: args.phoneNumber,
+          password: "args.password",
+        };
+
+        emailHelper.emailDocument(
+          "ubaid.uok@gmail.com",
+          "xpgyzq7c8",
+          "ubaid@yopmail.com",
+          "Request for reset password",
+          "views/emailTemplates/signup_without_password_template.html",
+          "Request for reset password",
+          templateData,
+          function (isError, data) {
+            console.log("Error Occured", isError);
+            console.log("Response of email", data);
+          }
+        );
+
+        return userModel.find({ email: args.email });
       },
     },
   },
