@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema(
     email: { type: String, require: true, trim: true },
     phoneNumber: { type: String, require: true },
     password: { type: String, trim: true, default: "" },
-    isPasswordRequest: { type: Boolean, default: false },
+    userRole: { type: Number, default: 1 }, // 1=admin, 2=sub-admin, 3=members
     code: { type: String, default: "" },
     description: { type: String, default: "" },
     createdAt: { type: Date, default: new Date(), required: true },
@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema(
     ],
     isRegistered: { type: Boolean, default: false },
     status: { type: Number, default: 1 }, // 1=active, 2=inactive
-    userRole: { type: Number, default: 1 }, // 1=admin, 3=sub-admin
+    isPasswordRequest: { type: Boolean, default: false },
     lastLogin: { type: Date, default: "" },
     phoneNo: { type: String, default: "" },
     address: { type: String, default: "" },

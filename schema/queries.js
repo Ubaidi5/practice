@@ -24,7 +24,7 @@ const RootQuery = new GraphQLObjectType({
         email: { type: GraphQLString },
         phoneNumber: { type: GraphQLString },
       },
-      resolve: (_, args) => {
+      resolve: async (_, args) => {
         const templateData = {
           firstName: args.firstName,
           lastName: args.lastName,
@@ -42,12 +42,16 @@ const RootQuery = new GraphQLObjectType({
           "Request for reset password",
           templateData,
           function (isError, data) {
-            console.log("Error Occured", isError);
-            console.log("Response of email", data);
+            // console.log("Error Occured", isError);
+            // console.log("Response of email", data);
           }
         );
-
-        return userModel.find({ email: args.email });
+        const user = await userModel.findOne({ email: args.email });
+        if (user) {
+          return user;
+        } else {
+          throw new Error("User not found");
+        }
       },
     },
   },
