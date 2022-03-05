@@ -1,9 +1,11 @@
 const userModel = require("../models/userModel");
 const branchModel = require("../models/branchModel");
-
 const JWT = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const Chance = require("chance");
+
 require("dotenv").config();
+const chance = new Chance();
 
 const userController = {
   isUserExist: async (args) => {
@@ -102,6 +104,43 @@ const userController = {
 
       await newMember.save();
       return newMember;
+    } catch (err) {
+      return err;
+    }
+  },
+  createSubAdmin: async (args) => {
+    try {
+      newPassword = chance.string({
+        length: 8,
+        casing: "lower",
+        alpha: true,
+        numeric: true,
+        symbols: true,
+      });
+      console.log("New Password", newPassword);
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10); // for now having low level security
+
+      args.password = hashedPassword;
+      args.email = args.email.replaceAll(" ", "").toLowerCase();
+      args.userRols = 2; // User role 2 for sub admin
+
+      const newSubAdmin = new userModel(args); // New User Created
+
+      const newToken = JWT.sign(
+        { id: newSubAdmin._id, email: newSubAdmin.email },
+        process.env.token_secret
+      );
+      const jwtToken = {
+        token: newToken,
+        createdAt: new Date(),
+      };
+      newSubAdmin.jwtToken = jwtToken;
+      newSubAdmin.loggedDevices.push({ jwtToken });
+      // Saving after inserting JWT
+      await newSubAdmin.save();
+
+      return newSubAdmin;
     } catch (err) {
       return err;
     }

@@ -119,7 +119,7 @@ const Mutations = new GraphQLObjectType({
       },
     },
     createNewMember: {
-      type: Types.USER_TYPE,
+      type: Types.MEMBER_TYPE,
       args: {
         firstName: { type: GraphQLString },
         lastName: { type: GraphQLString },
@@ -134,12 +134,44 @@ const Mutations = new GraphQLObjectType({
         startDate: { type: GraphQLString },
         branchId: { type: GraphQLString },
       },
-      resolve: (parents, args) => {
-        return new Promise(async (resolve, reject) => {
+      resolve: async (_, args) => {
+        try {
           const newMember = await userController.createNewMember(args);
-          console.log("New member is created \n", newMember);
-          resolve(newMember);
-        });
+          return newMember;
+        } catch (err) {
+          throw new Error(err);
+        }
+      },
+    },
+    createSubAdmin: {
+      type: Types.USER_TYPE,
+      args: {
+        firstName: { type: GraphQLString },
+        lastName: { type: GraphQLString },
+        email: { type: GraphQLString },
+        phoneNumber: { type: GraphQLString },
+        dob: { type: GraphQLString },
+        gender: { type: GraphQLString },
+        city: { type: GraphQLString },
+        state: { type: GraphQLString },
+        zipCode: { type: GraphQLString },
+        street: { type: GraphQLString },
+        startDate: { type: GraphQLString },
+        branchId: { type: new GraphQLList(GraphQLString) },
+      },
+      resolve: async (_, args) => {
+        try {
+          const { isUserExist } = await userController.isUserExist(args);
+
+          if (isUserExist) {
+            throw "User already exist";
+          }
+
+          const newSubAdmin = await userController.createSubAdmin(args);
+          return newSubAdmin;
+        } catch (err) {
+          throw new Error(err);
+        }
       },
     },
   },
