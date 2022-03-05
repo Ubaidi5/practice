@@ -76,9 +76,7 @@ const Mutations = new GraphQLObjectType({
             const updatedUser = await userController.forgotPassword(user);
             resolve(updatedUser);
           } else {
-            reject(
-              new Error("Doesn't found any account associated with this email")
-            );
+            reject(new Error("Doesn't found any account associated with this email"));
           }
         });
       },
@@ -95,10 +93,7 @@ const Mutations = new GraphQLObjectType({
           const { isUserExist, user } = await userController.isUserExist(args);
 
           if (isUserExist && args.code === user.code) {
-            const updatedUser = await userController.resetPassword(
-              user,
-              args.newPassword
-            );
+            const updatedUser = await userController.resetPassword(user, args.newPassword);
             resolve(updatedUser);
           } else {
             reject(new Error("Code is not valid"));
@@ -111,12 +106,12 @@ const Mutations = new GraphQLObjectType({
       args: {
         name: { type: GraphQLString },
         location: { type: GraphQLString },
-        subAdminId: { type: GraphQLList(GraphQLString) },
+        subAdminIds: { type: GraphQLList(GraphQLString) },
       },
       resolve: (parent, args) => {
         return new Promise(async (resolve, reject) => {
           const branch = new branchModel(args);
-          console.log("Branch", branch);
+          // console.log("Branch", branch);
 
           await branch.save();
           resolve(branch);
