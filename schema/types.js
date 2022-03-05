@@ -15,7 +15,7 @@ const JWT_TOKEN_TYPE = new GraphQLObjectType({
 });
 
 const BRANCH_TYPE = new GraphQLObjectType({
-  name: "banch",
+  name: "Branch",
   fields: () => ({
     _id: { type: GraphQLID },
     name: { type: GraphQLString },
@@ -24,8 +24,7 @@ const BRANCH_TYPE = new GraphQLObjectType({
       type: new GraphQLList(MEMBER_TYPE),
       resolve: (parent) => {
         return new Promise(async (resolve) => {
-          const users = await userModel.find();
-          // console.log(users);
+          const users = await userModel.find({ _id: { $all: parent.memberIds } });
           resolve(users);
         });
       },
@@ -34,11 +33,8 @@ const BRANCH_TYPE = new GraphQLObjectType({
       type: new GraphQLList(USER_TYPE),
       resolve: async (parent) => {
         try {
-          const subAdmins = await await userModel.find({ userRole: 3 });
-          const filtered = subAdmins.filter((subAdmin) =>
-            parent.subAdminIds.includes(subAdmin._id)
-          );
-          return filtered;
+          const subAdmins = await await userModel.find({ _id: { $all: parent.subAdminIds } });
+          return subAdmins;
         } catch (err) {
           return err;
         }
@@ -71,7 +67,8 @@ const USER_TYPE = new GraphQLObjectType({
       type: new GraphQLList(BRANCH_TYPE),
       resolve: async (parent) => {
         try {
-          const branch = await branchModel.find({ subAdminIds: { $in: [`${parent._id}`] } });
+          // const branch = await branchModel.find({ subAdminIds: { $in: [`${parent._id}`] } });
+          const branch = await branchModel.find({ subAdminIds: `${parent._id}` });
           return branch;
         } catch (err) {
           return err;
@@ -103,7 +100,10 @@ const MEMBER_TYPE = new GraphQLObjectType({
       type: new GraphQLList(BRANCH_TYPE),
       resolve: async (parent) => {
         try {
-          const branch = await branchModel.find({ subAdminIds: { $in: [`${parent._id}`] } });
+          //  This works the same as the statement below
+          // I am a little confused here because if subAdminIds is a string it will match as string but if query is array then it will automatically search if array include the query item
+          // const branch = await branchModel.find({ subAdminIds: { $in: [`${parent._id}`] } });
+          const branch = await branchModel.find({ memberIds: `${parent._id}` });
           return branch;
         } catch (err) {
           return err;
