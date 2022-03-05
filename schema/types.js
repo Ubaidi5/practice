@@ -21,23 +21,24 @@ const BRANCH_TYPE = new GraphQLObjectType({
     name: { type: GraphQLString },
     location: { type: GraphQLString },
     users: {
-      type: MEMBER_TYPE,
-      resolve: () => {
+      type: new GraphQLList(MEMBER_TYPE),
+      resolve: (parent) => {
         return new Promise(async (resolve) => {
-          // console.log("Parents", parents);
-          const users = await userModel.find({ userRole: 3 });
+          const users = await userModel.find();
           // console.log(users);
           resolve(users);
         });
       },
     },
     subAdmins: {
-      type: USER_TYPE,
-      resolve: async () => {
+      type: new GraphQLList(USER_TYPE),
+      resolve: async (parent) => {
         try {
-          const subAdmins = await await userModel.find({ userRole: 2 });
-          // console.log("Sub-Admin of a branch",subAdmins);
-          return subAdmins;
+          const subAdmins = await await userModel.find({ userRole: 3 });
+          const filtered = subAdmins.filter((subAdmin) =>
+            parent.subAdminIds.includes(subAdmin._id)
+          );
+          return filtered;
         } catch (err) {
           return err;
         }
@@ -102,7 +103,7 @@ const MEMBER_TYPE = new GraphQLObjectType({
       type: new GraphQLList(BRANCH_TYPE),
       resolve: async (parent) => {
         try {
-          const branch = await branchModel.find({ memberIds: { $in: [`${parent._id}`] } });
+          const branch = await branchModel.find({ subAdminIds: { $in: [`${parent._id}`] } });
           return branch;
         } catch (err) {
           return err;

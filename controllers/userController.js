@@ -1,4 +1,6 @@
 const userModel = require("../models/userModel");
+const branchModel = require("../models/branchModel");
+
 const JWT = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
@@ -26,10 +28,7 @@ const userController = {
 
       const user = new userModel(args); // New User Created
 
-      const newToken = JWT.sign(
-        { id: user._id, email: user.email },
-        process.env.token_secret
-      );
+      const newToken = JWT.sign({ id: user._id, email: user.email }, process.env.token_secret);
       const jwtToken = {
         token: newToken,
         createdAt: new Date(),
@@ -108,8 +107,20 @@ const userController = {
     }
   },
   getAllMembers: async () => {
-    const allMembers = await userModel.find({ userRole: 3 });
-    return allMembers;
+    try {
+      const allMembers = await userModel.find({ userRole: 3 });
+      return allMembers;
+    } catch (err) {
+      return err;
+    }
+  },
+  getAllBranches: async () => {
+    try {
+      const allBranches = await branchModel.find();
+      return allBranches;
+    } catch (err) {
+      return err;
+    }
   },
 };
 

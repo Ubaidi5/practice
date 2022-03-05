@@ -5,14 +5,8 @@ const userController = require("../controllers/userController");
 
 const Types = require("./types");
 
-const {
-  GraphQLObjectType,
-  GraphQLList,
-  GraphQLString,
-  GraphQLFloat,
-  GraphQLID,
-  GraphQLInt,
-} = graphql;
+const { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLFloat, GraphQLID, GraphQLInt } =
+  graphql;
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQuery",
@@ -62,6 +56,16 @@ const RootQuery = new GraphQLObjectType({
         return new Promise(async (resolve, reject) => {
           const allMembers = await userController.getAllMembers();
           resolve(allMembers);
+        });
+      },
+    },
+    getAllBranches: {
+      type: new GraphQLList(Types.BRANCH_TYPE),
+      args: {},
+      resolve: (parent, args) => {
+        return new Promise(async (resolve, reject) => {
+          const allBranches = await userController.getAllBranches();
+          resolve(allBranches);
         });
       },
     },
