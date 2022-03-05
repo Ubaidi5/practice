@@ -92,6 +92,21 @@ const userController = {
       return err;
     }
   },
+  createNewMember: async (args) => {
+    try {
+      args.email = args.email.replaceAll(" ", "").toLowerCase();
+
+      const newMember = new userModel({ ...args, userRole: 3 }); // New User Created
+      // A logged device will create to contains all check-ins of a user
+      // JWT is not required for member so there is no need to create one
+      // user.loggedDevices.push({ createdAt: new Date() });
+
+      await newMember.save();
+      return newMember;
+    } catch (err) {
+      return err;
+    }
+  },
 };
 
 module.exports = userController;

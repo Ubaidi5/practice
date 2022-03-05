@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema(
+const userModel = new mongoose.Schema(
   {
     fullName: { type: String, default: "" },
     firstName: { type: String, default: "" },
@@ -12,7 +12,6 @@ const userSchema = new mongoose.Schema(
     code: { type: String, default: "" },
     description: { type: String, default: "" },
     createdAt: { type: Date, default: new Date(), required: true },
-    branchIds: { type: Array, default: [] },
     jwtToken: {
       token: { type: String, default: "" },
       createdAt: { type: Date, default: new Date() },
@@ -33,7 +32,6 @@ const userSchema = new mongoose.Schema(
     status: { type: Number, default: 1 }, // 1=active, 2=inactive
     isPasswordRequest: { type: Boolean, default: false },
     lastLogin: { type: Date, default: "" },
-    phoneNo: { type: String, default: "" },
     address: { type: String, default: "" },
     country: { type: String, default: "" },
     state: { type: String, default: "" },
@@ -46,4 +44,4 @@ const userSchema = new mongoose.Schema(
   { collection: "users" }
 );
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("User", userModel);

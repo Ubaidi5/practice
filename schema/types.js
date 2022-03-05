@@ -13,12 +13,17 @@ const {
 const JWT_TOKEN_TYPE = new GraphQLObjectType({
   name: "jwtToken",
   fields: () => ({
-    token: {
-      type: GraphQLString,
-    },
-    createdAt: {
-      type: GraphQLDateTime,
-    },
+    token: { type: GraphQLString },
+    createdAt: { type: GraphQLDateTime },
+  }),
+});
+
+const BRANCH_TYPE = new GraphQLObjectType({
+  name: "banch",
+  fields: () => ({
+    _id: { type: GraphQLID },
+    name: { type: GraphQLString },
+    location: { type: GraphQLString },
   }),
 });
 
@@ -42,7 +47,8 @@ const USER_TYPE = new GraphQLObjectType({
     zipCode: { type: GraphQLString },
     timeZone: { type: GraphQLString },
     jwtToken: { type: JWT_TOKEN_TYPE },
+    branches: { type: BRANCH_TYPE },
   }),
 });
 
-module.exports = { USER_TYPE };
+module.exports = { USER_TYPE, BRANCH_TYPE };

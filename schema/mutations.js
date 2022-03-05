@@ -2,6 +2,7 @@ const graphql = require("graphql");
 const userController = require("../controllers/userController");
 const Types = require("./types");
 const bcrypt = require("bcrypt");
+const branchModel = require("../models/branchModel");
 
 const {
   GraphQLObjectType,
@@ -102,6 +103,47 @@ const Mutations = new GraphQLObjectType({
           } else {
             reject(new Error("Code is not valid"));
           }
+        });
+      },
+    },
+    addNewBranch: {
+      type: Types.BRANCH_TYPE,
+      args: {
+        name: { type: GraphQLString },
+        location: { type: GraphQLString },
+        subAdminId: { type: GraphQLList(GraphQLString) },
+      },
+      resolve: (parent, args) => {
+        return new Promise(async (resolve, reject) => {
+          const branch = new branchModel(args);
+          console.log("Branch", branch);
+
+          await branch.save();
+          resolve(branch);
+        });
+      },
+    },
+    createNewMember: {
+      type: Types.USER_TYPE,
+      args: {
+        firstName: { type: GraphQLString },
+        lastName: { type: GraphQLString },
+        email: { type: GraphQLString },
+        phoneNumber: { type: GraphQLString },
+        dob: { type: GraphQLString },
+        gender: { type: GraphQLString },
+        city: { type: GraphQLString },
+        state: { type: GraphQLString },
+        zipCode: { type: GraphQLString },
+        street: { type: GraphQLString },
+        startDate: { type: GraphQLString },
+        branchId: { type: GraphQLString },
+      },
+      resolve: (parents, args) => {
+        return new Promise(async (resolve, reject) => {
+          const newMember = await userController.createNewMember(args);
+          console.log("New member is created \n", newMember);
+          resolve(newMember);
         });
       },
     },
