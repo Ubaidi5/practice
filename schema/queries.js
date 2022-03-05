@@ -1,6 +1,7 @@
 const graphql = require("graphql");
 const userModel = require("../models/userModel");
 const emailHelper = require("../helpers/email_helper");
+const userController = require("../controllers/userController");
 
 const Types = require("./types");
 
@@ -52,6 +53,16 @@ const RootQuery = new GraphQLObjectType({
         } else {
           throw new Error("User not found");
         }
+      },
+    },
+    getAllMembers: {
+      type: new GraphQLList(Types.USER_TYPE),
+      args: {},
+      resolve: (parent, args) => {
+        return new Promise(async (resolve, reject) => {
+          const allMembers = await userController.getAllMembers();
+          resolve(allMembers);
+        });
       },
     },
   },

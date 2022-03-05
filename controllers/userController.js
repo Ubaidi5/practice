@@ -107,6 +107,10 @@ const userController = {
       return err;
     }
   },
+  getAllMembers: async () => {
+    const allMembers = await userModel.find({ userRole: 3 });
+    return allMembers;
+  },
 };
 
 module.exports = userController;
