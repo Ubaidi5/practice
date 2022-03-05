@@ -56,7 +56,7 @@ const RootQuery = new GraphQLObjectType({
       },
     },
     getAllMembers: {
-      type: new GraphQLList(Types.USER_TYPE),
+      type: new GraphQLList(Types.MEMBER_TYPE),
       args: {},
       resolve: (parent, args) => {
         return new Promise(async (resolve, reject) => {

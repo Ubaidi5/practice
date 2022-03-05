@@ -12,6 +12,7 @@ const userModel = new mongoose.Schema(
     code: { type: String, default: "" },
     description: { type: String, default: "" },
     createdAt: { type: Date, default: new Date(), required: true },
+    branchId: { type: String },
     jwtToken: {
       token: { type: String, default: "" },
       createdAt: { type: Date, default: new Date() },
