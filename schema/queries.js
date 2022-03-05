@@ -52,21 +52,25 @@ const RootQuery = new GraphQLObjectType({
     getAllMembers: {
       type: new GraphQLList(Types.MEMBER_TYPE),
       args: {},
-      resolve: (parent, args) => {
-        return new Promise(async (resolve, reject) => {
+      resolve: async () => {
+        try {
           const allMembers = await userController.getAllMembers();
-          resolve(allMembers);
-        });
+          return allMembers;
+        } catch (err) {
+          return err;
+        }
       },
     },
     getAllBranches: {
       type: new GraphQLList(Types.BRANCH_TYPE),
       args: {},
-      resolve: (parent, args) => {
-        return new Promise(async (resolve, reject) => {
+      resolve: async () => {
+        try {
           const allBranches = await userController.getAllBranches();
-          resolve(allBranches);
-        });
+          return allBranches;
+        } catch (err) {
+          return err;
+        }
       },
     },
   },
