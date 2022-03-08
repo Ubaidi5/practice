@@ -87,17 +87,19 @@ const Mutations = new GraphQLObjectType({
         code: { type: GraphQLString },
         newPassword: { type: GraphQLString },
       },
-      resolve: (parent, args) => {
-        return new Promise(async (resolve, reject) => {
+      resolve: async (parent, args) => {
+        try {
           const { isUserExist, user } = await userController.isUserExist(args);
-
+          console.log("args.newPassword", args.newPassword, args);
           if (isUserExist && args.code === user.code) {
             const updatedUser = await userController.resetPassword(user, args.newPassword);
-            resolve(updatedUser);
+            return updatedUser;
           } else {
-            reject(new Error("Code is not valid"));
+            throw "Code is not valid";
           }
-        });
+        } catch (err) {
+          throw new Error(err);
+        }
       },
     },
     addNewBranch: {
