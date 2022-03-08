@@ -40,7 +40,7 @@ const Mutations = new GraphQLObjectType({
         });
       },
     },
-    loginAdmin: {
+    login: {
       type: Types.USER_TYPE,
       args: {
         email: { type: GraphQLString },
