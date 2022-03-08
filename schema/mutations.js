@@ -46,22 +46,21 @@ const Mutations = new GraphQLObjectType({
         email: { type: GraphQLString },
         password: { type: GraphQLString },
       },
-      resolve: (parent, args) => {
-        return new Promise(async (resolve, reject) => {
+      resolve: async (parent, args) => {
+        try {
           const { isUserExist, user } = await userController.isUserExist(args); // Check if user exist
-
           if (isUserExist) {
             const match = await bcrypt.compare(args.password, user.password);
             if (match) {
               const updatedUser = await userController.loginAdmin(user);
-              resolve(updatedUser);
+              return updatedUser;
             } else {
-              reject(new Error("Email or password is incorrect"));
+              throw "Email or password is incorrect";
             }
-          } else {
-            reject(new Error("Email or password is incorrect"));
           }
-        });
+        } catch (err) {
+          throw new Error("User does not exist");
+        }
       },
     },
     forgotPassword: {
