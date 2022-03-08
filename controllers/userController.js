@@ -3,6 +3,7 @@ const branchModel = require("../models/branchModel");
 const JWT = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const Chance = require("chance");
+const emailHelper = require("../helpers/email_helper");
 
 require("dotenv").config();
 const chance = new Chance();
@@ -67,12 +68,26 @@ const userController = {
   },
   forgotPassword: async (userData) => {
     try {
-      const user = await userModel.findOneAndUpdate(
-        { _id: userData._id },
-        { $set: { code: 12345 } }
-      );
+      const code = chance.string({ length: 5, alpha: false, numeric: true });
 
-      return user;
+      const templateData = { code };
+
+      emailHelper.emailDocument(
+        process.env.send_email, // Sender email address
+        process.env.send_email_password, // Sender email password
+        userData.email, // Reciver email address
+        "Request for reset password", // Email subject
+        "views/emailTemplates/password_reset_code_template.html", // Email template
+        "REQUEST FOR RESET PASSWORD", // Don't know the use of this
+        templateData // Data to use in email template
+        // ,function (isError, data) {  // Function that run return error or success
+        //   console.log("Error Occured", isError);
+        //   console.log("Response of email", data);
+        // }
+      );
+      await userModel.findOneAndUpdate({ _id: userData._id }, { $set: { code } });
+      return userData;
+      // Still don't know how send email feature is working but its working 😎
     } catch (err) {
       return err;
     }
@@ -110,7 +125,7 @@ const userController = {
   },
   createSubAdmin: async (args) => {
     try {
-      newPassword = chance.string({
+      const newPassword = chance.string({
         length: 8,
         casing: "lower",
         alpha: true,
