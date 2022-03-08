@@ -90,7 +90,7 @@ const Mutations = new GraphQLObjectType({
       resolve: async (parent, args) => {
         try {
           const { isUserExist, user } = await userController.isUserExist(args);
-          console.log("args.newPassword", args.newPassword, args);
+
           if (isUserExist && args.code === user.code) {
             const updatedUser = await userController.resetPassword(user, args.newPassword);
             return updatedUser;

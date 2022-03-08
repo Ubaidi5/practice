@@ -94,7 +94,6 @@ const userController = {
   },
   resetPassword: async (userData, newPassword) => {
     try {
-      console.log("New Password:", newPassword);
       const hashedPassword = await bcrypt.hash(newPassword, 10); // for now having low level security
 
       const user = await userModel.findOneAndUpdate(
