@@ -123,7 +123,7 @@ const userController = {
 
       args.password = hashedPassword;
       args.email = args.email.replaceAll(" ", "").toLowerCase();
-      args.userRols = 2; // User role 2 for sub admin
+      args.userRole = 2; // User role 2 for sub admin
 
       const newSubAdmin = new userModel(args); // New User Created
 
