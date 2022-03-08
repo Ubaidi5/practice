@@ -132,7 +132,6 @@ const userController = {
         numeric: true,
         symbols: true,
       });
-      console.log("New Password", newPassword);
 
       const hashedPassword = await bcrypt.hash(newPassword, 10); // for now having low level security
 
@@ -141,6 +140,27 @@ const userController = {
       args.userRole = 2; // User role 2 for sub admin
 
       const newSubAdmin = new userModel(args); // New User Created
+
+      const templateData = {
+        firstName: newSubAdmin.firstName,
+        lastName: newSubAdmin.lastName,
+        email: newSubAdmin.email,
+        password: newPassword,
+      };
+
+      emailHelper.emailDocument(
+        process.env.send_email, // Sender email address
+        process.env.send_email_password, // Sender email password
+        newSubAdmin.email, // Reciver email address
+        "New account created.", // Email subject
+        "views/emailTemplates/new_account_created_template.html", // Email template
+        "NEW ACCOUNT CREATED", // Don't know the use of this
+        templateData // Data to use in email template
+        // ,function (isError, data) {  // Function that run return error or success
+        //   console.log("Error Occured", isError);
+        //   console.log("Response of email", data);
+        // }
+      );
 
       const newToken = JWT.sign(
         { id: newSubAdmin._id, email: newSubAdmin.email },
