@@ -50,7 +50,8 @@ const userController = {
     try {
       const newToken = JWT.sign(
         { id: userData._id, email: userData.email, roleId: userData.userRole },
-        "process.env.jwt_token"
+        "process.env.jwt_token",
+        { expiresIn: 60 * 2 }
       );
       const jwtToken = {
         token: newToken,
@@ -59,7 +60,8 @@ const userController = {
 
       const user = await userModel.findOneAndUpdate(
         { _id: userData._id },
-        { $set: { jwtToken }, $push: { loggedDevices: { jwtToken } } }
+        { $set: { jwtToken: jwtToken }, $push: { loggedDevices: { jwtToken } } },
+        { new: true }
       );
       return user;
     } catch (err) {

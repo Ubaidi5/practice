@@ -10,6 +10,7 @@ mongoose
   .connect(`mongodb://localhost:27017/mis`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false,
   })
   .then((args) => {
     console.log("Database Connection Successful!");
@@ -23,7 +24,7 @@ app.use(cors());
 app.use("/api/graphql", graphqlHTTP({ schema, graphiql: true }));
 
 app.listen(process.env.port, () => {
-  console.log("Server started on port 3000");
+  console.log(`Server started on port ${process.env.port}`);
 });
 
 const nodemailer = require("nodemailer");

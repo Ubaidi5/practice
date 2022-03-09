@@ -2,6 +2,7 @@ const graphql = require("graphql");
 const userModel = require("../models/userModel");
 const emailHelper = require("../helpers/email_helper");
 const userController = require("../controllers/userController");
+const JWT = require("jsonwebtoken");
 
 const Types = require("./types");
 
@@ -70,6 +71,21 @@ const RootQuery = new GraphQLObjectType({
           return allBranches;
         } catch (err) {
           return err;
+        }
+      },
+    },
+    verifyJWT: {
+      type: Types.USER_TYPE,
+      args: { jwt: { type: GraphQLString } },
+      resolve: async (parent, args) => {
+        try {
+          const user = await userModel.findOne({ email: "ubaid@yopmail.com" });
+          console.log("JWT", args.jwt);
+          const result = JWT.verify(args.jwt, "process.env.jwt_token");
+          console.log("Result: ", result);
+          return user;
+        } catch (err) {
+          throw new Error(err);
         }
       },
     },
