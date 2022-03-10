@@ -20,7 +20,7 @@ const userController = {
         return { isUserExist: false };
       }
     } catch (err) {
-      return err;
+      throw err;
     }
   },
   signupUser: async (args) => {
@@ -43,7 +43,7 @@ const userController = {
       await user.save();
       return user;
     } catch (err) {
-      return err;
+      throw err;
     }
   },
   loginAdmin: async (userData) => {
@@ -65,7 +65,7 @@ const userController = {
       );
       return user;
     } catch (err) {
-      return err;
+      throw err;
     }
   },
   forgotPassword: async (userData) => {
@@ -91,7 +91,7 @@ const userController = {
       return userData;
       // Still don't know how send email feature is working but its working 😎
     } catch (err) {
-      return err;
+      throw err;
     }
   },
   resetPassword: async (userData, newPassword) => {
@@ -107,7 +107,7 @@ const userController = {
 
       return user;
     } catch (err) {
-      return err;
+      throw err;
     }
   },
   createNewMember: async (args) => {
@@ -122,7 +122,7 @@ const userController = {
       await newMember.save();
       return newMember;
     } catch (err) {
-      return err;
+      throw err;
     }
   },
   createSubAdmin: async (args) => {
@@ -179,7 +179,7 @@ const userController = {
 
       return newSubAdmin;
     } catch (err) {
-      return err;
+      throw err;
     }
   },
   getAllMembers: async () => {
@@ -187,7 +187,7 @@ const userController = {
       const allMembers = await userModel.find({ userRole: 3 });
       return allMembers;
     } catch (err) {
-      return err;
+      throw err;
     }
   },
   getAllBranches: async () => {
@@ -195,7 +195,7 @@ const userController = {
       const allBranches = await branchModel.find();
       return allBranches;
     } catch (err) {
-      return err;
+      throw err;
     }
   },
 };
