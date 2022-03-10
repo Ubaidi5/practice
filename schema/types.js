@@ -23,11 +23,13 @@ const BRANCH_TYPE = new GraphQLObjectType({
     location: { type: GraphQLString },
     users: {
       type: new GraphQLList(MEMBER_TYPE),
-      resolve: (parent) => {
-        return new Promise(async (resolve) => {
+      resolve: async (parent) => {
+        try {
           const users = await userModel.find({ _id: { $all: parent.memberIds } });
-          resolve(users);
-        });
+          return users;
+        } catch (err) {
+          throw err;
+        }
       },
     },
     subAdmins: {
