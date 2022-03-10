@@ -23,6 +23,18 @@ const userController = {
       throw err;
     }
   },
+  verifyJWT: (headers) => {
+    try {
+      if (headers["authorization"]) {
+        const result = JWT.verify(headers["authorization"], "process.env.jwt_token");
+        return result;
+      } else {
+        throw new Error("Not authorized");
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
   signupUser: async (args) => {
     try {
       const hashedPassword = await bcrypt.hash(args.password, 10); // for now having low level security

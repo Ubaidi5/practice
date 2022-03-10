@@ -65,27 +65,13 @@ const RootQuery = new GraphQLObjectType({
     getAllBranches: {
       type: new GraphQLList(Types.BRANCH_TYPE),
       args: {},
-      resolve: async () => {
+      resolve: async (parent, args, request) => {
         try {
+          userController.verifyJWT(request.headers);
           const allBranches = await userController.getAllBranches();
           return allBranches;
         } catch (err) {
-          return err;
-        }
-      },
-    },
-    verifyJWT: {
-      type: Types.USER_TYPE,
-      args: { jwt: { type: GraphQLString } },
-      resolve: async (parent, args) => {
-        try {
-          const user = await userModel.findOne({ email: "ubaid@yopmail.com" });
-          console.log("JWT", args.jwt);
-          const result = JWT.verify(args.jwt, "process.env.jwt_token");
-          console.log("Result: ", result);
-          return user;
-        } catch (err) {
-          throw new Error(err);
+          throw err;
         }
       },
     },
