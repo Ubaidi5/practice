@@ -63,7 +63,7 @@ const userController = {
       const newToken = JWT.sign(
         { id: userData._id, email: userData.email, roleId: userData.userRole },
         "process.env.jwt_token",
-        { expiresIn: 60 * 2 }
+        { expiresIn: "1d" }
       );
       const jwtToken = {
         token: newToken,
@@ -190,6 +190,14 @@ const userController = {
       await newSubAdmin.save();
 
       return newSubAdmin;
+    } catch (err) {
+      throw err;
+    }
+  },
+  getAllSubAdmins: async () => {
+    try {
+      const allSubAdmins = await userModel.find({ userRole: 2 });
+      return allSubAdmins;
     } catch (err) {
       throw err;
     }

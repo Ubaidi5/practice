@@ -12,6 +12,19 @@ const { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLFloat, GraphQLID, 
 const RootQuery = new GraphQLObjectType({
   name: "RootQuery",
   fields: {
+    getAlSubAdmins: {
+      type: new GraphQLList(Types.USER_TYPE),
+      args: {},
+      resolve: async (parent, args, request) => {
+        try {
+          userController.verifyJWT(request.headers);
+          const allSubAdmins = await userController.getAllSubAdmins();
+          return allSubAdmins;
+        } catch (err) {
+          throw err;
+        }
+      },
+    },
     getAllMembers: {
       type: new GraphQLList(Types.MEMBER_TYPE),
       args: {},

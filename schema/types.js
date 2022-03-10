@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const graphql = require("graphql");
 const { GraphQLDateTime } = require("graphql-iso-date");
 const branchModel = require("../models/branchModel");
@@ -68,10 +69,11 @@ const USER_TYPE = new GraphQLObjectType({
       resolve: async (parent) => {
         try {
           // const branch = await branchModel.find({ subAdminIds: { $in: [`${parent._id}`] } });
+          console.log("Is ID Valid", mongoose.Types.ObjectId.isValid(parent._id));
           const branch = await branchModel.find({ subAdminIds: `${parent._id}` });
           return branch;
         } catch (err) {
-          return err;
+          throw err;
         }
       },
     },
@@ -101,12 +103,14 @@ const MEMBER_TYPE = new GraphQLObjectType({
       resolve: async (parent) => {
         try {
           //  This works the same as the statement below
-          // I am a little confused here because if subAdminIds is a string it will match as string but if query is array then it will automatically search if array include the query item
-          // const branch = await branchModel.find({ subAdminIds: { $in: [`${parent._id}`] } });
-          const branch = await branchModel.find({ memberIds: `${parent._id}` });
-          return branch;
+          // I am a little confused here because if memberIds is a string it will match as string but if query is array then it will automatically search if array include the query item
+          // const branch = await branchModel.find({ memberIds: { $in: [`${parent._id}`] } });
+          if (mongoose.Types.ObjectId.isValid(parent._id)) {
+            const branch = await branchModel.find({ memberIds: `${parent._id}` });
+            return branch;
+          }
         } catch (err) {
-          return err;
+          throw err;
         }
       },
     },
