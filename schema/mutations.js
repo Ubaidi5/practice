@@ -133,7 +133,7 @@ const Mutations = new GraphQLObjectType({
         zipCode: { type: GraphQLString },
         street: { type: GraphQLString },
         startDate: { type: GraphQLString },
-        branchId: { type: GraphQLString },
+        branchId: { type: new GraphQLList(GraphQLString) },
       },
       resolve: async (_, args) => {
         try {
@@ -170,6 +170,52 @@ const Mutations = new GraphQLObjectType({
 
           const newSubAdmin = await userController.createSubAdmin(args);
           return newSubAdmin;
+        } catch (err) {
+          throw new Error(err);
+        }
+      },
+    },
+    changeUserStatus: {
+      type: Types.USER_TYPE,
+      args: {
+        _id: { type: GraphQLID },
+        status: { type: GraphQLString },
+      },
+      resolve: async (parent, args, request) => {
+        try {
+          userController.verifyJWT(request.headers);
+          if (!(args.status === "1" || args.status === "2")) {
+            throw "Invalid argument";
+          }
+          const updatedUser = await userController.changeUserStatus(args);
+          return updatedUser;
+        } catch (err) {
+          throw new Error(err);
+        }
+      },
+    },
+    editMember: {
+      type: Types.MEMBER_TYPE,
+      args: {
+        _id: { type: GraphQLID },
+        firstName: { type: GraphQLString },
+        lastName: { type: GraphQLString },
+        email: { type: GraphQLString },
+        phoneNumber: { type: GraphQLString },
+        dob: { type: GraphQLString },
+        gender: { type: GraphQLString },
+        city: { type: GraphQLString },
+        state: { type: GraphQLString },
+        zipCode: { type: GraphQLString },
+        street: { type: GraphQLString },
+        startDate: { type: GraphQLString },
+        branchId: { type: new GraphQLList(GraphQLString) },
+      },
+      resolve: async (parent, args, request) => {
+        try {
+          userController.verifyJWT(request.headers);
+          const updatedUser = await userController.editUser(args);
+          return updatedUser;
         } catch (err) {
           throw new Error(err);
         }

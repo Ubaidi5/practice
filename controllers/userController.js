@@ -29,7 +29,7 @@ const userController = {
         const result = JWT.verify(headers["authorization"], "process.env.jwt_token");
         return result;
       } else {
-        throw new Error("Not authorized");
+        throw "Not authorized";
       }
     } catch (err) {
       throw err;
@@ -63,7 +63,7 @@ const userController = {
       const newToken = JWT.sign(
         { id: userData._id, email: userData.email, roleId: userData.userRole },
         "process.env.jwt_token",
-        { expiresIn: "1d" }
+        { expiresIn: "30d" }
       );
       const jwtToken = {
         token: newToken,
@@ -214,6 +214,29 @@ const userController = {
     try {
       const allBranches = await branchModel.find();
       return allBranches;
+    } catch (err) {
+      throw err;
+    }
+  },
+  changeUserStatus: async (args) => {
+    try {
+      const updatedUser = await userModel.findOneAndUpdate(
+        { _id: args._id },
+        { $set: { status: args.status } },
+        { new: true }
+      );
+      return updatedUser;
+    } catch (err) {
+      throw err;
+    }
+  },
+  editUser: async (userData) => {
+    try {
+      const updatedUser = await userModel.findOneAndUpdate(
+        { _id: userData._id },
+        { $set: { ...userData } }
+      );
+      return updatedUser;
     } catch (err) {
       throw err;
     }

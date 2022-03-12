@@ -30,7 +30,7 @@ const userModel = new mongoose.Schema(
       },
     ],
     isRegistered: { type: Boolean, default: false },
-    status: { type: Number, default: 1 }, // 1=active, 2=inactive
+    status: { type: String, default: 1 }, // 1=active, 2=inactive
     isPasswordRequest: { type: Boolean, default: false },
     lastLogin: { type: Date, default: "" },
     address: { type: String, default: "" },
