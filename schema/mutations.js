@@ -12,34 +12,12 @@ const {
   GraphQLFloat,
   GraphQLID,
   GraphQLInt,
+  GraphQLNonNull,
 } = graphql;
 
 const Mutations = new GraphQLObjectType({
   name: "Mutations", // This name appear in Graphiql documentation
   fields: {
-    signupUser: {
-      type: Types.USER_TYPE, // This is return type
-      args: {
-        firstName: { type: GraphQLString },
-        lastName: { type: GraphQLString },
-        email: { type: GraphQLString },
-        phoneNumber: { type: GraphQLString },
-        branchIds: { type: new GraphQLList(GraphQLString) },
-        password: { type: GraphQLString },
-      },
-      resolve: (parent, args) => {
-        return new Promise(async (resolve, reject) => {
-          const { isUserExist } = await userController.isUserExist(args);
-
-          if (isUserExist) {
-            reject(new Error("User already exixt"));
-          } else {
-            const response = await userController.signupUser(args);
-            resolve(response);
-          }
-        });
-      },
-    },
     login: {
       type: Types.USER_TYPE,
       args: {
@@ -109,34 +87,36 @@ const Mutations = new GraphQLObjectType({
         location: { type: GraphQLString },
         subAdminIds: { type: GraphQLList(GraphQLString) },
       },
-      resolve: (parent, args) => {
-        return new Promise(async (resolve, reject) => {
+      resolve: async (parent, args) => {
+        try {
+          userController.verifyJWT(request.headers);
           const branch = new branchModel(args);
-          // console.log("Branch", branch);
-
           await branch.save();
-          resolve(branch);
-        });
+          return branch;
+        } catch (err) {
+          throw new Error(err);
+        }
       },
     },
     createNewMember: {
       type: Types.MEMBER_TYPE,
       args: {
-        firstName: { type: GraphQLString },
-        lastName: { type: GraphQLString },
-        email: { type: GraphQLString },
-        phoneNumber: { type: GraphQLString },
-        dob: { type: GraphQLString },
-        gender: { type: GraphQLString },
-        city: { type: GraphQLString },
-        state: { type: GraphQLString },
-        zipCode: { type: GraphQLString },
-        street: { type: GraphQLString },
-        startDate: { type: GraphQLString },
+        firstName: { type: new GraphQLNonNull(GraphQLString) },
+        lastName: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        phoneNumber: { type: new GraphQLNonNull(GraphQLString) },
+        dob: { type: new GraphQLNonNull(GraphQLString) },
+        gender: { type: new GraphQLNonNull(GraphQLString) },
+        city: { type: new GraphQLNonNull(GraphQLString) },
+        state: { type: new GraphQLNonNull(GraphQLString) },
+        zipCode: { type: new GraphQLNonNull(GraphQLString) },
+        street: { type: new GraphQLNonNull(GraphQLString) },
+        startDate: { type: new GraphQLNonNull(GraphQLString) },
         branchId: { type: new GraphQLList(GraphQLString) },
       },
       resolve: async (_, args) => {
         try {
+          userController.verifyJWT(request.headers);
           const newMember = await userController.createNewMember(args);
           return newMember;
         } catch (err) {
@@ -147,48 +127,29 @@ const Mutations = new GraphQLObjectType({
     createSubAdmin: {
       type: Types.USER_TYPE,
       args: {
-        firstName: { type: GraphQLString },
-        lastName: { type: GraphQLString },
-        email: { type: GraphQLString },
-        phoneNumber: { type: GraphQLString },
-        dob: { type: GraphQLString },
-        gender: { type: GraphQLString },
-        city: { type: GraphQLString },
-        state: { type: GraphQLString },
-        zipCode: { type: GraphQLString },
-        street: { type: GraphQLString },
-        startDate: { type: GraphQLString },
-        branchId: { type: new GraphQLList(GraphQLString) },
+        firstName: { type: new GraphQLNonNull(GraphQLString) },
+        lastName: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        phoneNumber: { type: new GraphQLNonNull(GraphQLString) },
+        dob: { type: new GraphQLNonNull(GraphQLString) },
+        gender: { type: new GraphQLNonNull(GraphQLString) },
+        city: { type: new GraphQLNonNull(GraphQLString) },
+        state: { type: new GraphQLNonNull(GraphQLString) },
+        zipCode: { type: new GraphQLNonNull(GraphQLString) },
+        street: { type: new GraphQLNonNull(GraphQLString) },
+        startDate: { type: new GraphQLNonNull(GraphQLString) },
+        branchId: { type: new GraphQLList(new GraphQLNonNull(GraphQLID)) },
       },
       resolve: async (_, args) => {
         try {
+          userController.verifyJWT(request.headers);
           const { isUserExist } = await userController.isUserExist(args);
-
+          // Throw an error if user is already exist
           if (isUserExist) {
             throw "User already exist";
           }
-
           const newSubAdmin = await userController.createSubAdmin(args);
           return newSubAdmin;
-        } catch (err) {
-          throw new Error(err);
-        }
-      },
-    },
-    changeUserStatus: {
-      type: Types.USER_TYPE,
-      args: {
-        _id: { type: GraphQLID },
-        status: { type: GraphQLString },
-      },
-      resolve: async (parent, args, request) => {
-        try {
-          userController.verifyJWT(request.headers);
-          if (!(args.status === "1" || args.status === "2")) {
-            throw "Invalid argument";
-          }
-          const updatedUser = await userController.changeUserStatus(args);
-          return updatedUser;
         } catch (err) {
           throw new Error(err);
         }
@@ -197,7 +158,7 @@ const Mutations = new GraphQLObjectType({
     editMember: {
       type: Types.MEMBER_TYPE,
       args: {
-        _id: { type: GraphQLID },
+        _id: { type: new GraphQLNonNull(GraphQLID) },
         firstName: { type: GraphQLString },
         lastName: { type: GraphQLString },
         email: { type: GraphQLString },

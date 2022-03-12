@@ -3,6 +3,7 @@ const branchModel = require("../models/branchModel");
 const JWT = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const Chance = require("chance");
+const validations = require("../helpers/schemaValidation");
 const emailHelper = require("../helpers/email_helper");
 
 require("dotenv").config();
@@ -20,7 +21,7 @@ const userController = {
         return { isUserExist: false };
       }
     } catch (err) {
-      throw err;
+      return err;
     }
   },
   verifyJWT: (headers) => {
@@ -32,30 +33,7 @@ const userController = {
         throw "Not authorized";
       }
     } catch (err) {
-      throw err;
-    }
-  },
-  signupUser: async (args) => {
-    try {
-      const hashedPassword = await bcrypt.hash(args.password, 10); // for now having low level security
-      args.password = hashedPassword;
-      args.email = args.email.replaceAll(" ", "").toLowerCase();
-
-      const user = new userModel(args); // New User Created
-
-      const newToken = JWT.sign({ id: user._id, email: user.email }, process.env.token_secret);
-      const jwtToken = {
-        token: newToken,
-        createdAt: new Date(),
-      };
-
-      user.jwtToken = jwtToken;
-      user.loggedDevices.push({ jwtToken });
-
-      await user.save();
-      return user;
-    } catch (err) {
-      throw err;
+      return err;
     }
   },
   loginAdmin: async (userData) => {
@@ -103,7 +81,7 @@ const userController = {
       return userData;
       // Still don't know how send email feature is working but its working 😎
     } catch (err) {
-      throw err;
+      return err;
     }
   },
   resetPassword: async (userData, newPassword) => {
@@ -119,7 +97,7 @@ const userController = {
 
       return user;
     } catch (err) {
-      throw err;
+      return err;
     }
   },
   createNewMember: async (args) => {
@@ -134,11 +112,12 @@ const userController = {
       await newMember.save();
       return newMember;
     } catch (err) {
-      throw err;
+      return err;
     }
   },
   createSubAdmin: async (args) => {
     try {
+      await validations.member.validateAsync(args);
       const newPassword = chance.string({
         length: 8,
         casing: "lower",
@@ -191,7 +170,7 @@ const userController = {
 
       return newSubAdmin;
     } catch (err) {
-      throw err;
+      return err;
     }
   },
   getAllSubAdmins: async () => {
@@ -199,7 +178,7 @@ const userController = {
       const allSubAdmins = await userModel.find({ userRole: 2 });
       return allSubAdmins;
     } catch (err) {
-      throw err;
+      return err;
     }
   },
   getAllMembers: async () => {
@@ -207,7 +186,7 @@ const userController = {
       const allMembers = await userModel.find({ userRole: 3 });
       return allMembers;
     } catch (err) {
-      throw err;
+      return err;
     }
   },
   getAllBranches: async () => {
@@ -215,7 +194,7 @@ const userController = {
       const allBranches = await branchModel.find();
       return allBranches;
     } catch (err) {
-      throw err;
+      return err;
     }
   },
   changeUserStatus: async (args) => {
@@ -227,7 +206,7 @@ const userController = {
       );
       return updatedUser;
     } catch (err) {
-      throw err;
+      return err;
     }
   },
   editUser: async (userData) => {
@@ -238,7 +217,7 @@ const userController = {
       );
       return updatedUser;
     } catch (err) {
-      throw err;
+      return err;
     }
   },
 };
