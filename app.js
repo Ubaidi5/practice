@@ -4,10 +4,11 @@ const mongoose = require("mongoose");
 const schema = require("./schema");
 const cors = require("cors");
 require("dotenv").config();
-
+const connectionString = `mongodb://admin:dbc7a8832c7447118e25d0ee49ecd168@localhost:27017/mis?authSource=admin`;
+// &readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
 // mongodb+srv://mongodb-university:p3lvckgr@sandbox.ajavt.mongodb.net/graphql-playlist
 mongoose
-  .connect(`mongodb://localhost:27017/mis`, {
+  .connect(process.env.db_connection_string, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
