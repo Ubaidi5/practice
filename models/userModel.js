@@ -11,28 +11,17 @@ const userModel = new mongoose.Schema(
     userRole: { type: Number, default: 1 }, // 1=admin, 2=sub-admin, 3=members
     code: { type: String, default: "" },
     description: { type: String, default: "" },
-    createdAt: { type: Date, default: new Date(), required: true },
+    createdAt: { type: Date, default: new Date().toISOString(), required: true },
     branchId: { type: [String] },
-    jwtToken: {
-      token: { type: String, default: "" },
-      createdAt: { type: Date, default: new Date() },
-    },
-    loggedDevices: [
+    lastLogin: { type: Date },
+    logHistory: [
       {
-        createdAt: { type: Date, default: new Date() },
-        // deviceId: { type: String, required: true },
-        isUser: { type: Boolean, default: true },
-        notificationToken: { type: String },
-        jwtToken: {
-          token: { type: String, default: "" },
-          createdAt: { type: Date, default: new Date() },
-        },
+        createdAt: { type: Date, default: new Date().toISOString() },
+        branchId: { type: String },
       },
     ],
     isRegistered: { type: Boolean, default: false },
     status: { type: String, default: 1 }, // 1=active, 2=inactive
-    isPasswordRequest: { type: Boolean, default: false },
-    lastLogin: { type: Date, default: "" },
     address: { type: String, default: "" },
     country: { type: String, default: "" },
     state: { type: String, default: "" },

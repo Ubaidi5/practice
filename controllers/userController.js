@@ -159,16 +159,13 @@ const userController = {
         { id: newSubAdmin._id, email: newSubAdmin.email },
         process.env.token_secret
       );
+
       const jwtToken = {
         token: newToken,
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
       };
-      newSubAdmin.jwtToken = jwtToken;
-      newSubAdmin.loggedDevices.push({ jwtToken });
-      // Saving after inserting JWT
-      await newSubAdmin.save();
 
-      return newSubAdmin;
+      return { ...newSubAdmin, jwtToken };
     } catch (err) {
       return err;
     }

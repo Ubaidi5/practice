@@ -87,7 +87,7 @@ const Mutations = new GraphQLObjectType({
         location: { type: GraphQLString },
         subAdminIds: { type: GraphQLList(GraphQLString) },
       },
-      resolve: async (parent, args) => {
+      resolve: async (parent, args, request) => {
         try {
           userController.verifyJWT(request.headers);
           const branch = new branchModel(args);
@@ -114,7 +114,7 @@ const Mutations = new GraphQLObjectType({
         startDate: { type: new GraphQLNonNull(GraphQLString) },
         branchId: { type: new GraphQLList(GraphQLString) },
       },
-      resolve: async (_, args) => {
+      resolve: async (_, args, request) => {
         try {
           userController.verifyJWT(request.headers);
           const newMember = await userController.createNewMember(args);
@@ -137,10 +137,9 @@ const Mutations = new GraphQLObjectType({
         state: { type: new GraphQLNonNull(GraphQLString) },
         zipCode: { type: new GraphQLNonNull(GraphQLString) },
         street: { type: new GraphQLNonNull(GraphQLString) },
-        startDate: { type: new GraphQLNonNull(GraphQLString) },
-        branchId: { type: new GraphQLList(new GraphQLNonNull(GraphQLID)) },
+        branchId: { type: new GraphQLList(GraphQLID) },
       },
-      resolve: async (_, args) => {
+      resolve: async (_, args, request) => {
         try {
           userController.verifyJWT(request.headers);
           const { isUserExist } = await userController.isUserExist(args);
@@ -169,7 +168,6 @@ const Mutations = new GraphQLObjectType({
         state: { type: GraphQLString },
         zipCode: { type: GraphQLString },
         street: { type: GraphQLString },
-        startDate: { type: GraphQLString },
         branchId: { type: new GraphQLList(GraphQLString) },
       },
       resolve: async (parent, args, request) => {
