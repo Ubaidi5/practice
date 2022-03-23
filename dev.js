@@ -6,7 +6,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 mongoose
-  .connect(process.env.db_connection_string, {
+  .connect(process.env.local_db_connection_string, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
