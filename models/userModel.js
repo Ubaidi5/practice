@@ -7,13 +7,17 @@ const userModel = new mongoose.Schema(
     lastName: { type: String, default: "" },
     email: { type: String, require: true, trim: true },
     phoneNumber: { type: String, require: true },
-    password: { type: String, trim: true, default: "" },
+    password: { type: String, default: "" },
+    pictureURL: { type: String, default: "" },
     userRole: { type: Number, default: 1 }, // 1=admin, 2=sub-admin, 3=members
     code: { type: String, default: "" },
     description: { type: String, default: "" },
     createdAt: { type: Date, default: new Date().toISOString(), required: true },
-    branchId: { type: [String] },
-    lastLogin: { type: Date },
+    branchIds: { type: [String] },
+    lastLogin: {
+      createdAt: { type: Date },
+      branchId: { type: String },
+    },
     logHistory: [
       {
         createdAt: { type: Date, default: new Date().toISOString() },
@@ -21,7 +25,7 @@ const userModel = new mongoose.Schema(
       },
     ],
     isRegistered: { type: Boolean, default: false },
-    status: { type: String, default: 1 }, // 1=active, 2=inactive
+    status: { type: String, default: 1 }, // 1=active, 2=inactive, 0=deleted
     address: { type: String, default: "" },
     country: { type: String, default: "" },
     state: { type: String, default: "" },

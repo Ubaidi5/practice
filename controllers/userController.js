@@ -43,17 +43,20 @@ const userController = {
         "process.env.jwt_token",
         { expiresIn: "30d" }
       );
+
       const jwtToken = {
         token: newToken,
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
       };
+
+      const lastLogin = { createdAt: new Date().toISOString() };
 
       const user = await userModel.findOneAndUpdate(
         { _id: userData._id },
-        { $set: { jwtToken: jwtToken }, $push: { loggedDevices: { jwtToken } } },
+        { $set: { lastLogin }, $push: { logHistory: { lastLogin } } },
         { new: true }
       );
-      return user;
+      return { ...user._doc, jwtToken };
     } catch (err) {
       throw err;
     }
@@ -125,7 +128,7 @@ const userController = {
         numeric: true,
         symbols: true,
       });
-
+      // console.log("New Password: ", newPassword);
       const hashedPassword = await bcrypt.hash(newPassword, 10); // for now having low level security
 
       args.password = hashedPassword;
@@ -155,17 +158,8 @@ const userController = {
         // }
       );
 
-      const newToken = JWT.sign(
-        { id: newSubAdmin._id, email: newSubAdmin.email },
-        process.env.token_secret
-      );
-
-      const jwtToken = {
-        token: newToken,
-        createdAt: new Date().toISOString(),
-      };
-
-      return { ...newSubAdmin, jwtToken };
+      await newSubAdmin.save();
+      return newSubAdmin;
     } catch (err) {
       return err;
     }
