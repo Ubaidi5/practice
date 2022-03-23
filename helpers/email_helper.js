@@ -42,7 +42,7 @@ exports.emailDocument = function (
   emailTemplate,
   emailText,
   emailData,
-  cb
+  cb = () => {}
 ) {
   readHTMLFile(emailTemplate, (err, html) => {
     const template = handlebars.compile(html);
