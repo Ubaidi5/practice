@@ -166,7 +166,7 @@ const userController = {
   },
   getAllSubAdmins: async () => {
     try {
-      const allSubAdmins = await userModel.find({ userRole: 2 });
+      const allSubAdmins = await userModel.find({ userRole: 2 }).sort({ _id: -1 });
       return allSubAdmins;
     } catch (err) {
       return err;
@@ -174,7 +174,7 @@ const userController = {
   },
   getAllMembers: async () => {
     try {
-      const allMembers = await userModel.find({ userRole: 3 });
+      const allMembers = await userModel.find({ userRole: 3 }).sort({ _id: -1 });
       return allMembers;
     } catch (err) {
       return err;
@@ -182,7 +182,7 @@ const userController = {
   },
   getAllBranches: async () => {
     try {
-      const allBranches = await branchModel.find();
+      const allBranches = await branchModel.find().sort({ location: 1 });
       return allBranches;
     } catch (err) {
       return err;
