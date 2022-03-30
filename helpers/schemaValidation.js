@@ -1,6 +1,7 @@
 const Joi = require("joi");
 
 const member = Joi.object({
+  _id: Joi.string(),
   firstName: Joi.string().min(3),
   lastName: Joi.string().min(3),
   email: Joi.string().email(),

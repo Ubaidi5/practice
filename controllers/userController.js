@@ -203,7 +203,7 @@ const userController = {
   },
   editUser: async (userData) => {
     try {
-      await validations.member.validateAsync(args);
+      await validations.member.validateAsync(userData);
       const updatedUser = await userModel.findOneAndUpdate(
         { _id: userData._id },
         { $set: { ...userData } }
