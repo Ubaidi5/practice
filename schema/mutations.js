@@ -171,6 +171,7 @@ const Mutations = new GraphQLObjectType({
         zipCode: { type: GraphQLString },
         street: { type: GraphQLString },
         branchId: { type: new GraphQLList(GraphQLString) },
+        status: { type: GraphQLString },
       },
       resolve: async (parent, args, request) => {
         try {
