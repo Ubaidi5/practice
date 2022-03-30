@@ -92,6 +92,8 @@ const Mutations = new GraphQLObjectType({
       resolve: async (parent, args, request) => {
         try {
           userController.verifyJWT(request.headers);
+          //  add a condition here to check if the user is admin or not.
+          //  If the user is not super admin the throw an unauthorized message
           const branch = new branchModel(args);
           await branch.save();
           return branch;
@@ -105,16 +107,16 @@ const Mutations = new GraphQLObjectType({
       args: {
         firstName: { type: new GraphQLNonNull(GraphQLString) },
         lastName: { type: new GraphQLNonNull(GraphQLString) },
-        email: { type: new GraphQLNonNull(GraphQLString) },
         phoneNumber: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
         dob: { type: new GraphQLNonNull(GraphQLString) },
         gender: { type: new GraphQLNonNull(GraphQLString) },
+        address: { type: new GraphQLNonNull(GraphQLString) },
         city: { type: new GraphQLNonNull(GraphQLString) },
         state: { type: new GraphQLNonNull(GraphQLString) },
+        country: { type: new GraphQLNonNull(GraphQLString) },
         zipCode: { type: new GraphQLNonNull(GraphQLString) },
-        street: { type: new GraphQLNonNull(GraphQLString) },
-        startDate: { type: new GraphQLNonNull(GraphQLString) },
-        branchId: { type: new GraphQLList(GraphQLString) },
+        branchIds: { type: new GraphQLList(new GraphQLNonNull(GraphQLID)) },
       },
       resolve: async (_, args, request) => {
         try {
@@ -131,15 +133,16 @@ const Mutations = new GraphQLObjectType({
       args: {
         firstName: { type: new GraphQLNonNull(GraphQLString) },
         lastName: { type: new GraphQLNonNull(GraphQLString) },
-        email: { type: new GraphQLNonNull(GraphQLString) },
         phoneNumber: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
         dob: { type: new GraphQLNonNull(GraphQLString) },
         gender: { type: new GraphQLNonNull(GraphQLString) },
+        address: { type: new GraphQLNonNull(GraphQLString) },
         city: { type: new GraphQLNonNull(GraphQLString) },
         state: { type: new GraphQLNonNull(GraphQLString) },
+        country: { type: new GraphQLNonNull(GraphQLString) },
         zipCode: { type: new GraphQLNonNull(GraphQLString) },
-        street: { type: new GraphQLNonNull(GraphQLString) },
-        branchIds: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
+        branchIds: { type: new GraphQLList(new GraphQLNonNull(GraphQLID)) },
       },
       resolve: async (_, args, request) => {
         try {
@@ -170,7 +173,6 @@ const Mutations = new GraphQLObjectType({
         state: { type: GraphQLString },
         zipCode: { type: GraphQLString },
         street: { type: GraphQLString },
-        branchId: { type: new GraphQLList(GraphQLString) },
         status: { type: GraphQLString },
       },
       resolve: async (parent, args, request) => {

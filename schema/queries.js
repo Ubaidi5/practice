@@ -1,8 +1,7 @@
 const graphql = require("graphql");
-const userModel = require("../models/userModel");
-const emailHelper = require("../helpers/email_helper");
+// const userModel = require("../models/userModel");
+// const branchModel = require("../models/branchModel");
 const userController = require("../controllers/userController");
-const JWT = require("jsonwebtoken");
 
 const Types = require("./types");
 
@@ -29,6 +28,10 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(Types.MEMBER_TYPE),
       args: {},
       resolve: async (parent, args, request) => {
+        //  add a condition here to check if the user is admin or not.
+        //  If the user is not super admin the throw an unauthorized message
+        // Remember only super admin can get all users from this api.
+        // All sub-admin gets their their user from their branches
         try {
           userController.verifyJWT(request.headers);
           const allMembers = await userController.getAllMembers();
