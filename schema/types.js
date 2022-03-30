@@ -73,7 +73,7 @@ const USER_TYPE = new GraphQLObjectType({
       resolve: async (parent) => {
         try {
           // const branch = await branchModel.find({ subAdminIds: { $in: [`${parent._id}`] } });
-          console.log("Is ID Valid", mongoose.Types.ObjectId.isValid(parent._id));
+          // console.log("Is ID Valid", mongoose.Types.ObjectId.isValid(parent._id));
           const branch = await branchModel.find({ subAdminIds: `${parent._id}` });
           return branch;
         } catch (err) {
