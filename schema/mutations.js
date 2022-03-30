@@ -162,20 +162,21 @@ const Mutations = new GraphQLObjectType({
         }
       },
     },
-    editMember: {
-      type: Types.MEMBER_TYPE,
+    editUser: {
+      type: Types.USER_TYPE,
       args: {
         _id: { type: new GraphQLNonNull(GraphQLID) },
         firstName: { type: GraphQLString },
         lastName: { type: GraphQLString },
-        email: { type: GraphQLString },
         phoneNumber: { type: GraphQLString },
+        email: { type: GraphQLString },
         dob: { type: GraphQLString },
         gender: { type: GraphQLString },
+        address: { type: GraphQLString },
         city: { type: GraphQLString },
         state: { type: GraphQLString },
+        country: { type: GraphQLString },
         zipCode: { type: GraphQLString },
-        street: { type: GraphQLString },
         status: { type: GraphQLString },
       },
       resolve: async (parent, args, request) => {
