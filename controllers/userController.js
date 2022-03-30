@@ -158,6 +158,7 @@ const userController = {
         // }
       );
 
+      await userController.assingBranchToSubAadmin(args.branchIds[0], newSubAdmin);
       await newSubAdmin.save();
       return newSubAdmin;
     } catch (err) {
@@ -202,6 +203,7 @@ const userController = {
   },
   editUser: async (userData) => {
     try {
+      await validations.member.validateAsync(args);
       const updatedUser = await userModel.findOneAndUpdate(
         { _id: userData._id },
         { $set: { ...userData } }
@@ -209,6 +211,20 @@ const userController = {
       return updatedUser;
     } catch (err) {
       return err;
+    }
+  },
+  assingBranchToSubAadmin: async (branchId, userData) => {
+    try {
+      const branch = await branchModel.findOneAndUpdate(
+        { _id: branchId },
+        { $push: { subAdminIds: `${userData._id}` } },
+        { new: true }
+      );
+      if (branch == null) {
+        throw new Error("Invalid branch id is provided");
+      }
+    } catch (err) {
+      throw err;
     }
   },
 };

@@ -13,7 +13,7 @@ const member = Joi.object({
   zipCode: Joi.string().min(5).max(5),
   street: Joi.string().min(10),
   startDate: Joi.string(),
-  branchId: Joi.array().items(Joi.string()),
+  branchIds: Joi.array().items(Joi.string()),
   status: Joi.string().valid("1", "2"),
 });
 
