@@ -35,9 +35,11 @@ const Mutations = new GraphQLObjectType({
             } else {
               throw "Email or password is incorrect";
             }
+          } else {
+            throw "User does not exist";
           }
         } catch (err) {
-          throw new Error("User does not exist");
+          throw new Error(err);
         }
       },
     },
