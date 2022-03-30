@@ -33,7 +33,7 @@ const userController = {
         throw "Not authorized";
       }
     } catch (err) {
-      return err;
+      throw err;
     }
   },
   loginAdmin: async (userData) => {

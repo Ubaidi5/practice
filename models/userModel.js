@@ -8,6 +8,8 @@ const userModel = new mongoose.Schema(
     email: { type: String, require: true, trim: true },
     phoneNumber: { type: String, require: true },
     password: { type: String, default: "" },
+    gender: { type: String, default: "" },
+    dob: { type: Date, default: "" },
     pictureURL: { type: String, default: "" },
     userRole: { type: Number, default: 1 }, // 1=admin, 2=sub-admin, 3=members
     code: { type: String, default: "" },
