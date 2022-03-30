@@ -27,7 +27,7 @@ const userController = {
   verifyJWT: (headers) => {
     try {
       if (headers["authorization"]) {
-        const result = JWT.verify(headers["authorization"], "process.env.jwt_token");
+        const result = JWT.verify(headers["authorization"], process.env.jwt_token_secret);
         return result;
       } else {
         throw "Not authorized";
@@ -39,8 +39,13 @@ const userController = {
   loginAdmin: async (userData) => {
     try {
       const newToken = JWT.sign(
-        { id: userData._id, email: userData.email, roleId: userData.userRole },
-        "process.env.jwt_token",
+        {
+          id: userData._id,
+          email: userData.email,
+          status: userData.status,
+          userRole: userData.userRole,
+        },
+        process.env.jwt_token_secret,
         { expiresIn: "30d" }
       );
 

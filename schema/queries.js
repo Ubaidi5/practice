@@ -28,14 +28,16 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(Types.MEMBER_TYPE),
       args: {},
       resolve: async (parent, args, request) => {
-        //  add a condition here to check if the user is admin or not.
-        //  If the user is not super admin the throw an unauthorized message
-        // Remember only super admin can get all users from this api.
+        // Only super admin can get all users from this api.
         // All sub-admin gets their their user from their branches
         try {
-          userController.verifyJWT(request.headers);
-          const allMembers = await userController.getAllMembers();
-          return allMembers;
+          const { userRole } = userController.verifyJWT(request.headers);
+          if (userRole == 1) {
+            const allMembers = await userController.getAllMembers();
+            return allMembers;
+          } else {
+            throw new Error("You can not access this functionality due to insufficient rights");
+          }
         } catch (err) {
           throw err;
         }

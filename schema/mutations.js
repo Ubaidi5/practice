@@ -91,12 +91,15 @@ const Mutations = new GraphQLObjectType({
       },
       resolve: async (parent, args, request) => {
         try {
-          userController.verifyJWT(request.headers);
-          //  add a condition here to check if the user is admin or not.
-          //  If the user is not super admin the throw an unauthorized message
-          const branch = new branchModel(args);
-          await branch.save();
-          return branch;
+          // Only super admin can create branch
+          const { userRole } = userController.verifyJWT(request.headers);
+          if (userRole == 1) {
+            const branch = new branchModel(args);
+            await branch.save();
+            return branch;
+          } else {
+            throw "You can not access this functionality due to insufficient rights";
+          }
         } catch (err) {
           throw new Error(err);
         }
