@@ -116,7 +116,7 @@ const userController = {
       // A logged device will create to contains all check-ins of a user
       // JWT is not required for member so there is no need to create one
       // user.loggedDevices.push({ createdAt: new Date() });
-
+      await userController.assingBranchToMember(args.branchIds[0], newMember);
       await newMember.save();
       return newMember;
     } catch (err) {
@@ -223,6 +223,20 @@ const userController = {
       const branch = await branchModel.findOneAndUpdate(
         { _id: branchId },
         { $push: { subAdminIds: `${userData._id}` } },
+        { new: true }
+      );
+      if (branch == null) {
+        throw new Error("Invalid branch id is provided");
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+  assingBranchToMember: async (branchId, userData) => {
+    try {
+      const branch = await branchModel.findOneAndUpdate(
+        { _id: branchId },
+        { $push: { memberIds: `${userData._id}` } },
         { new: true }
       );
       if (branch == null) {
