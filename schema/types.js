@@ -25,7 +25,7 @@ const BRANCH_TYPE = new GraphQLObjectType({
       type: new GraphQLList(MEMBER_TYPE),
       resolve: async (parent) => {
         try {
-          const users = await userModel.find({ _id: { $all: parent.memberIds } });
+          const users = await userModel.find({ _id: { $in: parent.memberIds } });
           return users;
         } catch (err) {
           throw err;
@@ -36,7 +36,7 @@ const BRANCH_TYPE = new GraphQLObjectType({
       type: new GraphQLList(USER_TYPE),
       resolve: async (parent) => {
         try {
-          const subAdmins = await await userModel.find({ _id: { $all: parent.subAdminIds } });
+          const subAdmins = await await userModel.find({ _id: { $in: parent.subAdminIds } });
           return subAdmins;
         } catch (err) {
           return err;
