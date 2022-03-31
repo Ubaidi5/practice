@@ -211,7 +211,8 @@ const userController = {
       await validations.member.validateAsync(userData);
       const updatedUser = await userModel.findOneAndUpdate(
         { _id: userData._id },
-        { $set: { ...userData } }
+        { $set: { ...userData } },
+        { new: true }
       );
       return updatedUser;
     } catch (err) {
