@@ -79,11 +79,12 @@ const userController = {
         "Request for reset password", // Email subject
         "views/emailTemplates/password_reset_code_template.html", // Email template
         "REQUEST FOR RESET PASSWORD", // Don't know the use of this
-        templateData // Data to use in email template
-        // ,function (isError, data) {  // Function that run return error or success
-        //   console.log("Error Occured", isError);
-        //   console.log("Response of email", data);
-        // }
+        templateData, // Data to use in email template
+        function (isError, data) {
+          // Function that run return error or success
+          console.log("Email sent error:", isError);
+          console.log("Response --->", data);
+        }
       );
       await userModel.findOneAndUpdate({ _id: userData._id }, { $set: { code } });
       return userData;
