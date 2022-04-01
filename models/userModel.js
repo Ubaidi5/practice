@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const userModel = new mongoose.Schema(
   {
-    fullName: { type: String, default: "" },
-    firstName: { type: String, default: "" },
+    fullName: { type: String, default: "", require: true },
+    firstName: { type: String, default: "", require: true },
     lastName: { type: String, default: "" },
     email: { type: String, require: true, trim: true },
-    phoneNumber: { type: String, require: true },
+    phoneNumber: { type: String },
     password: { type: String, default: "" },
     gender: { type: String, default: "" },
     dob: { type: Date, default: "" },
