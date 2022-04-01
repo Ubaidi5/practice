@@ -79,12 +79,12 @@ const userController = {
         "Request for reset password", // Email subject
         "views/emailTemplates/password_reset_code_template.html", // Email template
         "REQUEST FOR RESET PASSWORD", // Don't know the use of this
-        templateData, // Data to use in email template
-        function (isError, data) {
-          // Function that run return error or success
-          console.log("Email sent error:", isError);
-          console.log("Response --->", data);
-        }
+        templateData // Data to use in email template
+        // function (isError, data) {
+        // Function that run return error or success
+        // console.log("Email sent error:", isError);
+        // console.log("Response --->", data);
+        // }
       );
       await userModel.findOneAndUpdate({ _id: userData._id }, { $set: { code } });
       return userData;
@@ -97,14 +97,33 @@ const userController = {
     try {
       const hashedPassword = await bcrypt.hash(newPassword, 10); // for now having low level security
 
+      const newToken = JWT.sign(
+        {
+          id: userData._id,
+          email: userData.email,
+          status: userData.status,
+          userRole: userData.userRole,
+        },
+        process.env.jwt_token_secret,
+        { expiresIn: "30d" }
+      );
+
+      const jwtToken = {
+        token: newToken,
+        createdAt: new Date().toISOString(),
+      };
+
+      const lastLogin = { createdAt: new Date().toISOString() };
+
       const user = await userModel.findOneAndUpdate(
         { _id: userData._id },
         {
-          $set: { password: hashedPassword, code: "" },
+          $set: { password: hashedPassword, code: "", lastLogin },
+          $push: { logHistory: { lastLogin } },
         }
       );
 
-      return user;
+      return { ...user._doc, jwtToken };
     } catch (err) {
       return err;
     }
