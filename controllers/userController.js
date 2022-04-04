@@ -36,6 +36,51 @@ const userController = {
       throw err;
     }
   },
+  signup: async (args) => {
+    try {
+      await validations.member.validateAsync(args);
+      const newPassword = chance.string({
+        length: 8,
+        casing: "lower",
+        alpha: true,
+        numeric: true,
+        symbols: true,
+      });
+      // console.log("New Password: ", newPassword);
+      const hashedPassword = await bcrypt.hash(newPassword, 10); // for now having low level security
+
+      args.password = hashedPassword;
+      args.email = args.email.replaceAll(" ", "").toLowerCase();
+      args.userRole = 2; // User role 2 for sub admin
+
+      const newUser = new userModel(args); // New User Created
+
+      const templateData = {
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        email: newUser.email,
+        password: newPassword,
+      };
+
+      emailHelper.emailDocument(
+        process.env.send_email, // Sender email address
+        process.env.send_email_password, // Sender email password
+        newUser.email, // Reciver email address
+        "New account created.", // Email subject
+        "views/emailTemplates/new_account_created_template.html", // Email template
+        "NEW ACCOUNT CREATED", // Don't know the use of this
+        templateData // Data to use in email template
+        // ,function (isError, data) {  // Function that run return error or success
+        //   console.log("Error Occured", isError);
+        //   console.log("Response of email", data);
+        // }
+      );
+      await newUser.save();
+      return newUser;
+    } catch (err) {
+      return err;
+    }
+  },
   loginAdmin: async (userData) => {
     try {
       const newToken = JWT.sign(
@@ -128,7 +173,7 @@ const userController = {
       return err;
     }
   },
-  createNewMember: async (args) => {
+  createBlog: async (args) => {
     try {
       args.email = args.email.replaceAll(" ", "").toLowerCase();
 
@@ -143,85 +188,10 @@ const userController = {
       return err;
     }
   },
-  createSubAdmin: async (args) => {
-    try {
-      await validations.member.validateAsync(args);
-      const newPassword = chance.string({
-        length: 8,
-        casing: "lower",
-        alpha: true,
-        numeric: true,
-        symbols: true,
-      });
-      // console.log("New Password: ", newPassword);
-      const hashedPassword = await bcrypt.hash(newPassword, 10); // for now having low level security
-
-      args.password = hashedPassword;
-      args.email = args.email.replaceAll(" ", "").toLowerCase();
-      args.userRole = 2; // User role 2 for sub admin
-
-      const newSubAdmin = new userModel(args); // New User Created
-
-      const templateData = {
-        firstName: newSubAdmin.firstName,
-        lastName: newSubAdmin.lastName,
-        email: newSubAdmin.email,
-        password: newPassword,
-      };
-
-      emailHelper.emailDocument(
-        process.env.send_email, // Sender email address
-        process.env.send_email_password, // Sender email password
-        newSubAdmin.email, // Reciver email address
-        "New account created.", // Email subject
-        "views/emailTemplates/new_account_created_template.html", // Email template
-        "NEW ACCOUNT CREATED", // Don't know the use of this
-        templateData // Data to use in email template
-        // ,function (isError, data) {  // Function that run return error or success
-        //   console.log("Error Occured", isError);
-        //   console.log("Response of email", data);
-        // }
-      );
-
-      await userController.assingBranchToSubAadmin(args.branchIds[0], newSubAdmin);
-      await newSubAdmin.save();
-      return newSubAdmin;
-    } catch (err) {
-      return err;
-    }
-  },
-  getAllSubAdmins: async () => {
-    try {
-      const allSubAdmins = await userModel.find({ userRole: 2 }).sort({ _id: -1 });
-      return allSubAdmins;
-    } catch (err) {
-      return err;
-    }
-  },
-  getAllMembers: async () => {
-    try {
-      const allMembers = await userModel.find({ userRole: 3 }).sort({ _id: -1 });
-      return allMembers;
-    } catch (err) {
-      return err;
-    }
-  },
-  getAllBranches: async () => {
+  getAllBlogs: async () => {
     try {
       const allBranches = await branchModel.find().sort({ location: 1 });
       return allBranches;
-    } catch (err) {
-      return err;
-    }
-  },
-  changeUserStatus: async (args) => {
-    try {
-      const updatedUser = await userModel.findOneAndUpdate(
-        { _id: args._id },
-        { $set: { status: args.status } },
-        { new: true }
-      );
-      return updatedUser;
     } catch (err) {
       return err;
     }
@@ -239,32 +209,17 @@ const userController = {
       return err;
     }
   },
-  assingBranchToSubAadmin: async (branchId, userData) => {
+  editBlog: async (userData) => {
     try {
-      const branch = await branchModel.findOneAndUpdate(
-        { _id: branchId },
-        { $push: { subAdminIds: `${userData._id}` } },
+      await validations.member.validateAsync(userData);
+      const updatedUser = await userModel.findOneAndUpdate(
+        { _id: userData._id },
+        { $set: { ...userData } },
         { new: true }
       );
-      if (branch == null) {
-        throw new Error("Invalid branch id is provided");
-      }
+      return updatedUser;
     } catch (err) {
-      throw err;
-    }
-  },
-  assingBranchToMember: async (branchId, userData) => {
-    try {
-      const branch = await branchModel.findOneAndUpdate(
-        { _id: branchId },
-        { $push: { memberIds: `${userData._id}` } },
-        { new: true }
-      );
-      if (branch == null) {
-        throw new Error("Invalid branch id is provided");
-      }
-    } catch (err) {
-      throw err;
+      return err;
     }
   },
 };

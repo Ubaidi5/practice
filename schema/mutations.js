@@ -4,20 +4,40 @@ const Types = require("./types");
 const bcrypt = require("bcrypt");
 const branchModel = require("../models/branchModel");
 
-const {
-  GraphQLObjectType,
-  GraphQLSchema,
-  GraphQLList,
-  GraphQLString,
-  GraphQLFloat,
-  GraphQLID,
-  GraphQLInt,
-  GraphQLNonNull,
-} = graphql;
+const { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLID, GraphQLNonNull } = graphql;
 
 const Mutations = new GraphQLObjectType({
   name: "Mutations", // This name appear in Graphiql documentation
   fields: {
+    signup: {
+      type: Types.USER_TYPE,
+      args: {
+        firstName: { type: new GraphQLNonNull(GraphQLString) },
+        lastName: { type: new GraphQLNonNull(GraphQLString) },
+        phoneNumber: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        dob: { type: GraphQLString },
+        gender: { type: GraphQLString },
+        address: { type: GraphQLString },
+        city: { type: GraphQLString },
+        state: { type: GraphQLString },
+        country: { type: GraphQLString },
+        zipCode: { type: GraphQLString },
+      },
+      resolve: async (_, args, request) => {
+        try {
+          const { isUserExist } = await userController.isUserExist(args);
+          // Throw an error if user is already exist
+          if (isUserExist) {
+            throw "User already exist";
+          }
+          const newUser = await userController.signup(args);
+          return newUser;
+        } catch (err) {
+          throw new Error(err);
+        }
+      },
+    },
     login: {
       type: Types.USER_TYPE,
       args: {
@@ -82,8 +102,8 @@ const Mutations = new GraphQLObjectType({
         }
       },
     },
-    addNewBranch: {
-      type: Types.BRANCH_TYPE,
+    createNewBlog: {
+      type: Types.BLOG_TYPE,
       args: {
         name: { type: GraphQLString },
         location: { type: GraphQLString },
@@ -105,63 +125,6 @@ const Mutations = new GraphQLObjectType({
         }
       },
     },
-    createNewMember: {
-      type: Types.MEMBER_TYPE,
-      args: {
-        firstName: { type: new GraphQLNonNull(GraphQLString) },
-        lastName: { type: new GraphQLNonNull(GraphQLString) },
-        phoneNumber: { type: GraphQLString },
-        email: { type: new GraphQLNonNull(GraphQLString) },
-        dob: { type: GraphQLString },
-        gender: { type: GraphQLString },
-        address: { type: GraphQLString },
-        city: { type: GraphQLString },
-        state: { type: GraphQLString },
-        country: { type: GraphQLString },
-        zipCode: { type: GraphQLString },
-        branchIds: { type: new GraphQLList(new GraphQLNonNull(GraphQLID)) },
-      },
-      resolve: async (_, args, request) => {
-        try {
-          userController.verifyJWT(request.headers);
-          const newMember = await userController.createNewMember(args);
-          return newMember;
-        } catch (err) {
-          throw new Error(err);
-        }
-      },
-    },
-    createSubAdmin: {
-      type: Types.USER_TYPE,
-      args: {
-        firstName: { type: new GraphQLNonNull(GraphQLString) },
-        lastName: { type: new GraphQLNonNull(GraphQLString) },
-        phoneNumber: { type: GraphQLString },
-        email: { type: new GraphQLNonNull(GraphQLString) },
-        dob: { type: GraphQLString },
-        gender: { type: GraphQLString },
-        address: { type: GraphQLString },
-        city: { type: GraphQLString },
-        state: { type: GraphQLString },
-        country: { type: GraphQLString },
-        zipCode: { type: GraphQLString },
-        branchIds: { type: new GraphQLList(new GraphQLNonNull(GraphQLID)) },
-      },
-      resolve: async (_, args, request) => {
-        try {
-          userController.verifyJWT(request.headers);
-          const { isUserExist } = await userController.isUserExist(args);
-          // Throw an error if user is already exist
-          if (isUserExist) {
-            throw "User already exist";
-          }
-          const newSubAdmin = await userController.createSubAdmin(args);
-          return newSubAdmin;
-        } catch (err) {
-          throw new Error(err);
-        }
-      },
-    },
     editUser: {
       type: Types.USER_TYPE,
       args: {
@@ -178,6 +141,23 @@ const Mutations = new GraphQLObjectType({
         country: { type: GraphQLString },
         zipCode: { type: GraphQLString },
         status: { type: GraphQLString },
+      },
+      resolve: async (parent, args, request) => {
+        try {
+          userController.verifyJWT(request.headers);
+          const updatedUser = await userController.editUser(args);
+          return updatedUser;
+        } catch (err) {
+          throw new Error(err);
+        }
+      },
+    },
+    editBlog: {
+      type: Types.USER_TYPE,
+      args: {
+        _id: { type: new GraphQLNonNull(GraphQLID) },
+        title: { type: GraphQLString },
+        description: { type: GraphQLString },
       },
       resolve: async (parent, args, request) => {
         try {
