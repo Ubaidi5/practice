@@ -4,7 +4,7 @@ const blogModel = new mongoose.Schema(
   {
     title: { type: String, default: "" },
     description: { type: String, default: "" },
-    authorId: { type: [String] },
+    authorId: { type: String },
     createdAt: { type: Date, default: new Date() },
   },
   { versionKey: false },

@@ -1,5 +1,6 @@
 const userModel = require("../models/userModel");
 const branchModel = require("../models/branchModel");
+const blogModel = require("../models/blogModel");
 const JWT = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const Chance = require("chance");
@@ -85,7 +86,7 @@ const userController = {
     try {
       const newToken = JWT.sign(
         {
-          id: userData._id,
+          _id: userData._id,
           email: userData.email,
           status: userData.status,
           userRole: userData.userRole,
@@ -173,24 +174,23 @@ const userController = {
       return err;
     }
   },
-  createBlog: async (args) => {
+  createBlog: async (user, args) => {
     try {
-      args.email = args.email.replaceAll(" ", "").toLowerCase();
-
-      const newMember = new userModel({ ...args, userRole: 3 }); // New User Created
-      // A logged device will create to contains all check-ins of a user
-      // JWT is not required for member so there is no need to create one
-      // user.loggedDevices.push({ createdAt: new Date() });
-      await userController.assingBranchToMember(args.branchIds[0], newMember);
-      await newMember.save();
-      return newMember;
+      const data = {
+        authorId: user._id,
+        title: args.title,
+        description: args.description,
+      };
+      const newBlog = new blogModel(data);
+      await newBlog.save();
+      return newBlog;
     } catch (err) {
       return err;
     }
   },
-  getAllBlogs: async () => {
+  getAllBlogs: async (userData) => {
     try {
-      const allBranches = await branchModel.find().sort({ location: 1 });
+      const allBranches = await blogModel.find({ authorId: userData._id });
       return allBranches;
     } catch (err) {
       return err;
@@ -198,7 +198,6 @@ const userController = {
   },
   editUser: async (userData) => {
     try {
-      await validations.member.validateAsync(userData);
       const updatedUser = await userModel.findOneAndUpdate(
         { _id: userData._id },
         { $set: { ...userData } },
@@ -209,12 +208,11 @@ const userController = {
       return err;
     }
   },
-  editBlog: async (userData) => {
+  editBlog: async (blogData) => {
     try {
-      await validations.member.validateAsync(userData);
-      const updatedUser = await userModel.findOneAndUpdate(
-        { _id: userData._id },
-        { $set: { ...userData } },
+      const updatedUser = await blogModel.findOneAndUpdate(
+        { _id: blogData._id },
+        { $set: { ...blogData } },
         { new: true }
       );
       return updatedUser;

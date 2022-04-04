@@ -102,24 +102,17 @@ const Mutations = new GraphQLObjectType({
         }
       },
     },
-    createNewBlog: {
+    createBlog: {
       type: Types.BLOG_TYPE,
       args: {
-        name: { type: GraphQLString },
-        location: { type: GraphQLString },
-        subAdminIds: { type: GraphQLList(GraphQLString) },
+        title: { type: new GraphQLNonNull(GraphQLString) },
+        description: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve: async (parent, args, request) => {
         try {
-          // Only super admin can create branch
-          const { userRole } = userController.verifyJWT(request.headers);
-          if (userRole == 1) {
-            const branch = new branchModel(args);
-            await branch.save();
-            return branch;
-          } else {
-            throw "You can not access this functionality due to insufficient rights";
-          }
+          const user = userController.verifyJWT(request.headers);
+          const newBlog = await userController.createBlog(user, args);
+          return newBlog;
         } catch (err) {
           throw new Error(err);
         }
@@ -153,7 +146,7 @@ const Mutations = new GraphQLObjectType({
       },
     },
     editBlog: {
-      type: Types.USER_TYPE,
+      type: Types.BLOG_TYPE,
       args: {
         _id: { type: new GraphQLNonNull(GraphQLID) },
         title: { type: GraphQLString },
@@ -162,7 +155,7 @@ const Mutations = new GraphQLObjectType({
       resolve: async (parent, args, request) => {
         try {
           userController.verifyJWT(request.headers);
-          const updatedUser = await userController.editUser(args);
+          const updatedUser = await userController.editBlog(args);
           return updatedUser;
         } catch (err) {
           throw new Error(err);
